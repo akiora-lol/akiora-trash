@@ -1,55 +1,92 @@
-from dishka.integrations.faststream import (
-    FromDishka,
-    inject,
-    setup_dishka,
-    FastStreamProvider,
-)
-from dishka import make_async_container, Provider, provide, Scope
-import aio_pika
+from dishka import Provider, provide, Scope, make_async_container
 from typing import AsyncIterable
+import logging
 
+from faststream import FastStream
+from faststream.rabbit import RabbitBroker, ExchangeType, RabbitExchange, RabbitQueue
+from faststream.annotations import Logger
+
+from config.settings import Settings, settings
 from repos.chat_repo import ChatRepo
-from services.rabbit_producer import OrderService
-from services.rabbit_producer import RabbitMQProducer
+from repos.message_repo import MessageRepo
+from backend.ChatService.services.message_producer import MessageProducer
+from services.chat_service import ChatService
+from services.message_service import MessageService
 
 
-class RabbitMQProvider(Provider):
+# Провайдер для конфигурации
+class ConfigProvider(Provider):
     @provide(scope=Scope.APP)
-    async def get_rabbitmq_connection(
-        self,
-    ) -> AsyncIterable[aio_pika.abc.AbstractRobustConnection]:
-        connection = await aio_pika.connect_robust("amqp://guest:guest@localhost:5672/")
-        yield connection
-        await connection.close()
+    def get_settings(self) -> Settings:
+        return settings
 
+
+class BrokerProvider(Provider):
     @provide(scope=Scope.APP)
-    async def get_message_producer(
+    async def get_rabbit_broker(
         self,
-        connection: aio_pika.abc.AbstractRobustConnection,
-    ) -> RabbitMQProducer:
-        return RabbitMQProducer(connection)
+        settings: Settings,
+    ) -> AsyncIterable[RabbitBroker]:
+        broker = RabbitBroker(
+            url=settings.rabbitmq_url,
+            logger=logging.getLogger("faststream.rabbit"),
+        )
+
+        await broker.start()
+        yield broker
+        await broker.stop()
 
 
 class ServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    async def get_order_service(
+    def get_message_producer(
         self,
-        message_producer: RabbitMQProducer,
-    ) -> OrderService:
-        return OrderService(message_producer)
+        broker: RabbitBroker,
+        settings: Settings,
+    ) -> MessageProducer:
+        """Создает продюсера для публикации сообщений."""
+        return MessageProducer(broker=broker, settings=settings)
 
-
-class ChatRepoProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    async def get_chat_repo(self) -> ChatRepo:
+    def get_chat_service(
+        self,
+        chat_repo: ChatRepo,
+    ) -> ChatService:
+        """Создает сервис для работы с чатами."""
+        return ChatService(chat_repo=chat_repo)
+
+    @provide(scope=Scope.REQUEST)
+    def get_message_service(
+        self,
+        message_repo: MessageRepo,
+        chat_service: ChatService,
+    ) -> MessageService:
+        """Создает сервис для работы с сообщениями."""
+        return MessageService(message_repo=message_repo, chat_service=chat_service)
+
+
+class RepositoryProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def get_chat_repo(self) -> ChatRepo:
+        """Создает репозиторий для работы с чатами."""
         return ChatRepo()
+
+    @provide(scope=Scope.REQUEST)
+    def get_message_repo(self) -> MessageRepo:
+        """Создает репозиторий для работы с сообщениями."""
+        return MessageRepo()
 
 
 def create_providers():
+    """Создает список всех провайдеров для Dishka контейнера."""
     return [
-        RabbitMQProvider(),
+        ConfigProvider(),
+        BrokerProvider(),
         ServiceProvider(),
+        RepositoryProvider(),
     ]
 
 
-container = make_async_container(*create_providers())
+def create_container():
+    """Создает и настраивает Dishka контейнер."""
+    return make_async_container(*create_providers())
