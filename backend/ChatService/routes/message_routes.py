@@ -1,23 +1,19 @@
-"""
-Роуты для обработки событий сообщений в RabbitMQ.
-"""
-
 import logging
 from typing import Union
 
-from faststream.rabbit import RabbitRouter, RabbitQueue, RabbitExchange, ExchangeType
+from faststream.rabbit import RabbitRouter
 from faststream.annotations import Logger
 from dishka.integrations.faststream import FromDishka, inject
 
 from config.settings import settings
-from schemas.events import (
+from schemas import (
     CreateMessageEvent,
     UpdateMessageEvent,
     DeleteMessageEvent,
-    MessageEventType,
 )
 from services.message_service import MessageService
-from backend.ChatService.services.message_producer import MessageProducer
+from services.message_producer import MessageProducer
+import messaging
 
 logger = logging.getLogger(__name__)
 
@@ -25,23 +21,9 @@ logger = logging.getLogger(__name__)
 message_router = RabbitRouter()
 
 
-chat_exchange = RabbitExchange(
-    name=settings.rabbitmq_exchange_name,
-    type=ExchangeType.DIRECT,
-    durable=settings.rabbitmq_exchange_durable,
-)
-
-
-input_queue = RabbitQueue(
-    name=settings.rabbitmq_input_queue,
-    durable=settings.rabbitmq_input_queue_durable,
-    routing_key=settings.rabbitmq_input_routing_key,
-)
-
-
 @message_router.subscriber(
-    queue=input_queue,
-    exchange=chat_exchange,
+    queue=messaging.message_queue,
+    exchange=messaging.chat_exchange,
 )
 @inject
 async def handle_message_event(
@@ -58,18 +40,18 @@ async def handle_message_event(
     )
 
     try:
-        # Обрабатываем событие в зависимости от типа
-        if event_type == MessageEventType.CREATE:
+        if event_type == "create":
             processed = await message_service.process_create_message(message)
-        elif event_type == MessageEventType.UPDATE:
+        elif event_type == "update":
             processed = await message_service.process_update_message(message)
-        elif event_type == MessageEventType.DELETE:
+        elif event_type == "delete":
             processed = await message_service.process_delete_message(message)
         else:
             logger.error(f"Unknown event type: {event_type}")
             raise ValueError(f"Unknown event type: {event_type}")
 
-        await producer.publish_processed_message(processed)
+        # TODO uncomment when ws done
+        # await producer.publish_processed_message(processed)
 
         logger.info(
             f"Successfully processed {event_type} event: "
@@ -86,7 +68,7 @@ async def handle_message_event(
         raise
 
 
-@message_router.subscriber(f"{settings.rabbitmq_input_queue}.dlq")
+@message_router.subscriber(f"{settings.rabbit_settings.message_input_queue}.dlq")
 @inject
 async def handle_dead_letter_queue(
     message: Union[CreateMessageEvent, UpdateMessageEvent, DeleteMessageEvent],
@@ -100,7 +82,3 @@ async def handle_dead_letter_queue(
         f"Message in DLQ: type={message.event_type}, "
         f"user={message.user_id}, chat={message.chat_id}"
     )
-    # Здесь можно добавить логику для обработки неудачных сообщений:
-    # - сохранение в БД для ручной обработки
-    # - отправка уведомления админам
-    # - повторная попытка обработки

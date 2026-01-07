@@ -2,14 +2,12 @@ from dishka import Provider, provide, Scope, make_async_container
 from typing import AsyncIterable
 import logging
 
-from faststream import FastStream
-from faststream.rabbit import RabbitBroker, ExchangeType, RabbitExchange, RabbitQueue
-from faststream.annotations import Logger
+from faststream.rabbit import RabbitBroker
 
 from config.settings import Settings, settings
 from repos.chat_repo import ChatRepo
 from repos.message_repo import MessageRepo
-from backend.ChatService.services.message_producer import MessageProducer
+from services.message_producer import MessageProducer
 from services.chat_service import ChatService
 from services.message_service import MessageService
 
@@ -44,7 +42,6 @@ class ServiceProvider(Provider):
         broker: RabbitBroker,
         settings: Settings,
     ) -> MessageProducer:
-        """Создает продюсера для публикации сообщений."""
         return MessageProducer(broker=broker, settings=settings)
 
     @provide(scope=Scope.REQUEST)
@@ -88,5 +85,4 @@ def create_providers():
 
 
 def create_container():
-    """Создает и настраивает Dishka контейнер."""
     return make_async_container(*create_providers())

@@ -20,17 +20,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Создаем брокер
+
 broker = RabbitBroker(url=settings.rabbitmq_url)
 
-# Подключаем роутеры с обработчиками
 broker.include_router(message_router)
 broker.include_router(chat_router)
 
-# Создаем приложение FastStream
+
 app = FastStream(broker)
 
-# Настраиваем Dishka контейнер
+
 container = create_container()
 setup_dishka(container, app)
 
@@ -53,12 +52,12 @@ async def on_startup():
         raise
 
     logger.info(
-        f"Connected to RabbitMQ at {settings.rabbitmq_host}:{settings.rabbitmq_port}"
+        f"Connected to RabbitMQ at {settings.rabbit_settings.host}:{settings.rabbit_settings.port}"
     )
-    logger.info(f"Exchange: {settings.rabbitmq_exchange_name}")
-    logger.info(f"Message input queue: {settings.rabbitmq_input_queue}")
-    logger.info(f"Chat input queue: {settings.rabbitmq_chat_input_queue}")
-    logger.info(f"Output queue: {settings.rabbitmq_output_queue}")
+    logger.info(f"Exchange: {settings.rabbit_settings.exchange_name}")
+    logger.info(f"Message input queue: {settings.rabbit_settings.message_input_queue}")
+    logger.info(f"Chat input queue: {settings.rabbit_settings.chat_input_queue}")
+    logger.info(f"Output exchange: {settings.rabbit_settings.output_exchange_name}")
     logger.info(
         "Supported message events: message.create, message.update, message.delete"
     )

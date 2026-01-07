@@ -21,7 +21,7 @@ class Message(Document):
     chat_id: UUID
     creator_id: UUID
     content: str = Field(min_length=1, max_length=500)
-    ttl: int | None = Field(default=None, gt=0)  # Time to live in seconds
+    ttl: int | None = Field(default=None, gt=0)
     status: MessageStatus = Field(default=MessageStatus.SENT)
     timestamp: datetime = Field(default_factory=utc_now)
 

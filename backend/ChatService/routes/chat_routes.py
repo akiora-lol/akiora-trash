@@ -4,38 +4,25 @@
 
 import logging
 
-from faststream.rabbit import RabbitRouter, RabbitQueue, RabbitExchange, ExchangeType
+from faststream.rabbit import RabbitRouter
 from faststream.annotations import Logger
 from dishka.integrations.faststream import FromDishka, inject
+import messaging
 
-from config.settings import settings
-from schemas.events import CreateChatEvent
+
+from schemas import CreateChatEvent
 from services.chat_service import ChatService
-from backend.ChatService.services.message_producer import MessageProducer
+from services.message_producer import MessageProducer
 
 logger = logging.getLogger(__name__)
 
-# Создаем роутер для чатов
+
 chat_router = RabbitRouter()
-
-# Декларируем exchange
-chat_exchange = RabbitExchange(
-    name=settings.rabbitmq_exchange_name,
-    type=ExchangeType.DIRECT,
-    durable=settings.rabbitmq_exchange_durable,
-)
-
-# Декларируем input queue для создания чатов
-chat_input_queue = RabbitQueue(
-    name=settings.rabbitmq_chat_input_queue,
-    durable=settings.rabbitmq_chat_input_queue_durable,
-    routing_key=settings.rabbitmq_chat_input_routing_key,
-)
 
 
 @chat_router.subscriber(
-    queue=chat_input_queue,
-    exchange=chat_exchange,
+    queue=messaging.chat_queue,
+    exchange=messaging.chat_exchange,
 )
 @inject
 async def handle_create_chat_event(
@@ -55,9 +42,6 @@ async def handle_create_chat_event(
     try:
         # Обрабатываем создание чата
         processed = await chat_service.process_create_chat(event)
-
-        # Публикуем обработанное событие
-        await producer.publish_processed_chat(processed)
 
         logger.info(
             f"Successfully processed CREATE chat event: "
