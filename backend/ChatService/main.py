@@ -39,7 +39,6 @@ async def on_startup():
     """Обработчик события запуска приложения."""
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
 
-    # Инициализация MongoDB и Beanie
     try:
         client = AsyncIOMotorClient(settings.mongodb_url)
         await init_beanie(
