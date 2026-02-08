@@ -1,0 +1,20 @@
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, EmailStr
+
+
+class CreateUser(BaseModel):
+    email: EmailStr
+    key: str
+
+
+class EmailRequest(BaseModel):
+    email: str
+
+
+class SimpleUpdateRequest(BaseModel):
+    email: EmailStr | None = None
+    gender: Literal["male", "female"] | None = None
+    nickname: str | None = None
+    age: int | None = None
+
+    model_config = ConfigDict(extra="ignore")
