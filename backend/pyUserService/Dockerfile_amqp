@@ -16,4 +16,4 @@ ENV PYTHONPATH=/app
 
 # Запуск приложения
 WORKDIR /app/pyUserService
-CMD ["python", "main.py"]
+CMD ["python", "main_amqp.py"]

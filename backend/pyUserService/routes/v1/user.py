@@ -4,7 +4,7 @@ from schemas.v1.user import CreateUser, EmailRequest, SimpleUpdateRequest
 from models.user import User
 from repos.user import UserRepo
 from services.session import SessionDescriptor
-from typing import Annotated, Any
+from typing import Annotated
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/users")
 
 
 class Cookies(BaseModel):
-    session_id: UUID
+    session_id: str
 
 
 @router.post("/")
@@ -29,7 +29,8 @@ async def update_user(
     cookies: Annotated[Cookies, Cookie()],
     sd: SessionDescriptor = Depends(SessionDescriptor),
 ) -> User:
-    user_id = await sd.get_user_id(cookies.session_id)
+    user_id = await sd.get_user_id_by_session_id(cookies.session_id)
+    print(user_id)
     if user_id:
         user = await UserRepo.update_user(user_id, update_data)
         return user

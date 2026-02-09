@@ -2,21 +2,19 @@
 from faststream.rabbit import RabbitExchange, RabbitQueue, ExchangeType
 
 
-parse_exchange = RabbitExchange(
-    name="parse-service-exchange",
-    type=ExchangeType.DIRECT,
+user_exchange = RabbitExchange(
+    name="user.events.topic",
+    type=ExchangeType.TOPIC,
     durable=True,
 )
 
-avq = RabbitQueue(
-    name="account-verification-queue",
+auth_exchange = RabbitExchange(
+    name="auth.events.topic",
+    type=ExchangeType.TOPIC,
     durable=True,
-    routing_key="verify-lol-account",
-    
 )
 
-aaq = RabbitQueue(
-    name="account-actualization-queue",
-    durable=True,
-    routing_key="actualize-lol-account",
+
+session_queue = RabbitQueue(
+    name="user.session.queue", durable=True, routing_key="auth.session.*"
 )
