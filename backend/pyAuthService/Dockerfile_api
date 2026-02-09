@@ -16,4 +16,4 @@ ENV PYTHONPATH=/app
 
 # Запуск приложения
 WORKDIR /app/pyAuthService
-CMD ["python", "main.py"]
+CMD ["python", "main_api.py"]

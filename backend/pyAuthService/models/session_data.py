@@ -15,23 +15,16 @@ def session_expires_at():
 
 class SessionData(Document):
     id: UUID = Field(default_factory=uuid4)
-    user_id: UUID
     email: EmailStr
-    roles: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=time_now)
     last_activity: datetime = Field(default_factory=time_now)
-    # ip_address: IPvAnyAddress | None = None
+    ip_address: IPvAnyAddress
     exipres_at: datetime = Field(default_factory=session_expires_at)
     auth_source: str
-    age: int | None = None
-    gender: Literal["male", "female"] | None = None
+    custom_data: dict = Field(default_factory=dict)
 
     @field_serializer("id")
     def serialize_id(self, id: UUID):
-        return str(id)
-
-    @field_serializer("user_id")
-    def serialize_user_id(self, id: UUID):
         return str(id)
 
     @field_serializer("created_at")

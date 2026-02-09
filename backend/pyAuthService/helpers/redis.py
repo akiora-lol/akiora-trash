@@ -1,4 +1,4 @@
-from config.settings import settings
+from config import settings
 from typing import Optional
 
 
