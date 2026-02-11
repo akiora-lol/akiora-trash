@@ -1,0 +1,34 @@
+from datetime import datetime, UTC
+from typing import Literal, Optional
+from beanie import Document
+from pydantic import BaseModel, Field
+from uuid import UUID, uuid4
+
+
+def utc_now():
+    return datetime.now(tz=UTC)
+
+
+class MessageShort(BaseModel):
+    body: str
+    timestamp: datetime = Field(default_factory=utc_now)
+
+
+class Message(Document):
+    id: UUID = Field(default_factory=uuid4)
+    chat_id: UUID
+    creator_id: UUID
+    body: str = Field(min_length=1, max_length=500)
+    expires_at: datetime | None = Field(default=None)
+    status: Literal["sent", "read"] = "sent"
+    read_by: list[UUID] = Field(default_factory=list)
+    timestamp: datetime = Field(default_factory=utc_now)
+    history: list[MessageShort] = Field(default_factory=list)
+    spoiler: bool = Field(False)
+
+    def short(self):
+        return MessageShort(body=self.body)
+
+    class Settings:
+        bson_encoders = {UUID: str}
+        keep_nulls = False
