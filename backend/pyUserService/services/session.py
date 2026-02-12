@@ -1,6 +1,6 @@
 from uuid import UUID
 import uuid
-from helpers.caching import get_redis_client
+from helpers import get_redis_client
 
 
 class SessionDescriptor:

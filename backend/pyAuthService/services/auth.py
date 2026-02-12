@@ -42,7 +42,7 @@ def verify_session(signed_id: str) -> str:
 
 class AuthService:
     def __init__(self):
-
+        self.broker = get_rabbit_broker()
         self.session_service = SessionService()
 
     async def verify_user(self, sso: DiscordSSO, request: Request):
@@ -60,8 +60,8 @@ class AuthService:
     async def register_user(self, email, provider, client_host):
 
         ses_id = await self.session_service.create_session(email, provider, client_host)
-        broker = get_rabbit_broker()
-        await broker.publish(
+
+        await self.broker.publish(
             exchange=auth_exchange,
             routing_key="auth.session.created",
             message={"email": email, "sid": str(ses_id)},

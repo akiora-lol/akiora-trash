@@ -9,6 +9,12 @@ from repos.user import UserRepo
 router = RabbitRouter()
 
 
+@router.subscriber(queue="user_rpc")
+async def handle_rpc_request(event: dict, logger: Logger):
+    logger.info(f"RPC Received {event}")
+    return 333
+
+
 @router.publisher(exchange=user_exchange, routing_key="user.info.public")
 @router.subscriber(
     queue=session_queue,
