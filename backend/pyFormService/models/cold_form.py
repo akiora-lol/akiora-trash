@@ -39,16 +39,9 @@ class RankRange(BaseModel):
     max_rank: LeagueRank
 
 
-class HotForm(Document):
-    id: UUID = Field(default_factory=uuid4)
-    owner_id: UUID
-    owner_type: Literal["group", "user"]
-    liked_by: list[UUID] = Field(default_factory=list)
-    disliked_by: list[UUID] = Field(default_factory=list)
-    created_at: datetime = Field(default_factory=time_now)
-
+class ShortForm(BaseModel):
+    blocked_by: list[UUID] = Field(default_factory=list)
     rank_range: list[RankRange]
-
     my_roles: list[Literal["top", "jg", "mid", "adc", "sup"]] = Field(
         default_factory=list
     )
@@ -57,7 +50,31 @@ class HotForm(Document):
     )
     description: str
 
+
+class ColdForm(Document):
+    id: UUID = Field(default_factory=uuid4)
+    owner_id: UUID
+    owner_type: Literal["user"] = "user"
+    liked_by: list[UUID] = Field(default_factory=list)
+    disliked_by: list[UUID] = Field(default_factory=list)
+    blocked_by: list[UUID] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=time_now)
+    rank_range: list[RankRange]
+    my_roles: list[Literal["top", "jg", "mid", "adc", "sup"]] = Field(
+        default_factory=list
+    )
+    looking_for_roles: list[Literal["top", "jg", "mid", "adc", "sup"]] = Field(
+        default_factory=list
+    )
+    description: str
+
+    status: Literal["active", "frozen"]
+    updated_at: datetime = Field(default_factory=time_now)
+    history: list[ShortForm] = Field(default_factory=list)
+
+    def short(self):
+        return ShortForm(**self.model_dump())
+
     class Settings:
         bson_encoders = {UUID: str}
         keep_nulls = False
-        indexes = [IndexModel([("created_at", ASCENDING)], expireAfterSeconds=1200)]

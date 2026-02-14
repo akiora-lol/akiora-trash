@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from models.user import User
+from models import HotForm, ColdForm
 import logging
 from config import settings
 from .redis import connect_redis, disconnect_redis
@@ -13,7 +13,8 @@ async def api_on_startup():
     try:
         client = AsyncIOMotorClient(settings.mongodb_url)
         await init_beanie(
-            database=client[settings.mongodb_db_name], document_models=[User]
+            database=client[settings.mongodb_db_name],
+            document_models=[HotForm, ColdForm],
         )
         logger.info(f"Connected to MongoDB at {settings.mongodb_url}")
         logger.info(f"Database: {settings.mongodb_db_name}")
@@ -53,7 +54,8 @@ async def consumer_on_startup():
     try:
         client = AsyncIOMotorClient(settings.mongodb_url)
         await init_beanie(
-            database=client[settings.mongodb_db_name], document_models=[User]
+            database=client[settings.mongodb_db_name],
+            document_models=[HotForm, ColdForm],
         )
         logger.info(f"Connected to MongoDB at {settings.mongodb_url}")
         logger.info(f"Database: {settings.mongodb_db_name}")

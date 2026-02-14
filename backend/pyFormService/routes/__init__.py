@@ -1,4 +1,3 @@
-from .sso.discord import router as discord_router
-from .sso.yandex import router as yandex_router
+from v1.main import router as v1_router
 
-__all__ = ["discord_router", "yandex_router"]
+__all__ = ["v1_router"]
