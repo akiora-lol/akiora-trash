@@ -12,14 +12,16 @@ from schemas.v1.api import Cookies, GetQueryParams
 
 router = APIRouter(prefix="/messages")
 
+def get_message_service() ->MessageService:
+    return MessageService()
 
 @router.post("/")
-async def create_message(create_data: CreateMessage) -> Message:
-    msg = await MessageService().create_message(user_id=uuid4(), event=create_data)
+async def create_message(create_data: CreateMessage, ms:MessageService=Depends(get_message_service)) -> Message:
+    msg = await ms.create_message(user_id=uuid4(), event=create_data)
     return msg
 
 
 @router.get("/{chat_id}")
-async def get_chat_messages(chat_id: UUID, params: Annotated[GetQueryParams, Query()]):
-    msgs = await MessageService().get_chat_messages(chat_id=chat_id, params=params)
+async def get_chat_messages(chat_id: UUID, params: Annotated[GetQueryParams, Query()],ms:MessageService=Depends(get_message_service)):
+    msgs = await ms.get_chat_messages(chat_id=chat_id, params=params)
     return msgs

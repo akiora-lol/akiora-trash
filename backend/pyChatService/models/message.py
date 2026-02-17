@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from typing import Literal, Optional
+from typing import Literal
 from beanie import Document
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
@@ -14,6 +14,10 @@ class MessageShort(BaseModel):
     timestamp: datetime = Field(default_factory=utc_now)
 
 
+class Reaction(BaseModel):
+    emote_id: str
+    user_id: str
+
 class Message(Document):
     id: UUID = Field(default_factory=uuid4)
     chat_id: UUID
@@ -24,6 +28,8 @@ class Message(Document):
     read_by: list[UUID] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=utc_now)
     history: list[MessageShort] = Field(default_factory=list)
+    reply_to: UUID | None = None
+    reactions: list[Reaction] = Field(default_factory=list)
     spoiler: bool = Field(False)
 
     def short(self):

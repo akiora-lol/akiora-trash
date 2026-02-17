@@ -5,7 +5,7 @@ from routes import v1_router
 import uvicorn
 import logging
 
-from helpers import api_on_startup, api_on_shutdown
+from utils import api_on_startup, api_on_shutdown
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     await api_on_shutdown()
 
 
-app = FastAPI(root_path="/chat", lifespan=lifespan)
+app = FastAPI(root_path="/messenger", lifespan=lifespan)
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
