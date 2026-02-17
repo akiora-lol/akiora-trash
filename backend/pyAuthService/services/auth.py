@@ -6,7 +6,7 @@ from config.settings import settings
 from fastapi import HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi_sso import DiscordSSO
-from helpers.broker import get_rabbit_broker
+from utils.broker import get_rabbit_broker
 from services.session import SessionService
 from config.messaging import auth_exchange
 

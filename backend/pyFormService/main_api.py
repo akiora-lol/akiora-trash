@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from routes import discord_router, yandex_router
-from helpers import api_on_shutdown, api_on_startup
+from utils import api_on_shutdown, api_on_startup
 
 
 logger = logging.getLogger(__name__)

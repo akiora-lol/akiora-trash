@@ -3,7 +3,7 @@ from faststream import FastStream
 from faststream.rabbit import RabbitBroker
 from config import settings
 from channels.base import router
-from helpers import consumer_on_startup, consumer_on_shutdown
+from utils import consumer_on_startup, consumer_on_shutdown
 
 
 logger = logging.getLogger(__name__)

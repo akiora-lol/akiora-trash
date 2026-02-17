@@ -8,7 +8,7 @@ from uuid import UUID
 from pydantic import EmailStr
 
 from models.session_data import SessionData
-from helpers.redis import get_redis_client
+from utils.redis import get_redis_client
 
 
 class SessionService:
