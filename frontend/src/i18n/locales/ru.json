@@ -1,0 +1,265 @@
+{
+  "common": {
+    "home": "Главная",
+    "profile": "Профиль",
+    "matches": "Анкеты",
+    "createMatch": "Создать анкету",
+    "search": "Поиск",
+    "cancel": "Отмена",
+    "submit": "Отправить",
+    "back": "Назад",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "contact": "Связаться",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно"
+  },
+  "header": {
+    "title": "AkioraGG",
+    "nav": {
+      "home": "Главная",
+      "matches": "Анкеты",
+      "profile": "Профиль",
+      "chats": "Чаты"
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "markAllRead": "Отметить все как прочитанные",
+      "noNotifications": "Нет новых уведомлений"
+    }
+  },
+  "footer": {
+    "description": "Платформа для поиска тиммейтов и друзей в League of Legends. Создавайте анкеты, находите игроков и поднимайтесь в ранге вместе.",
+    "navigation": "Навигация",
+    "about": "О проекте",
+    "support": "Поддержка",
+    "aboutUs": "О нас",
+    "rules": "Правила",
+    "contacts": "Контакты",
+    "faq": "FAQ",
+    "help": "Помощь",
+    "community": "Сообщество",
+    "reportBug": "Отчет об ошибке",
+    "privacy": "Политика конфиденциальности",
+    "copyright": "© 2025 AkioraGG. Все права защищены."
+  },
+  "matches": {
+    "title": "Поиск игроков",
+    "subtitle": "Найдите тиммейтов и друзей для игры в League of Legends",
+    "createButton": "Создать анкету",
+    "searchPlaceholder": "Поиск по имени или описанию...",
+    "filters": {
+      "allServers": "Все серверы",
+      "allRanks": "Все ранги",
+      "allRoles": "Все роли",
+      "allGoals": "Все цели"
+    },
+    "found": "Найдено анкет",
+    "notFound": {
+      "title": "Анкеты не найдены",
+      "description": "Попробуйте изменить фильтры или создайте свою анкету"
+    },
+    "card": {
+      "roles": "Роли",
+      "description": "Описание",
+      "age": "Возраст",
+      "playTime": "Время игры",
+      "goal": "Цель"
+    }
+  },
+  "createMatch": {
+    "title": "Создать анкету",
+    "subtitle": "Заполните информацию о себе, чтобы найти тиммейтов",
+    "backToMatches": "Назад к анкетам",
+    "form": {
+      "title": "Основная информация",
+      "subtitle": "Укажите ваши игровые данные",
+      "username": {
+        "label": "Имя пользователя",
+        "placeholder": "Введите ваш игровой никнейм",
+        "required": "Введите имя пользователя"
+      },
+      "server": {
+        "label": "Сервер",
+        "placeholder": "Выберите сервер",
+        "required": "Выберите сервер"
+      },
+      "roles": {
+        "label": "Роли",
+        "required": "Выберите хотя бы одну роль"
+      },
+      "rank": {
+        "label": "Ранг",
+        "placeholder": "Выберите ранг",
+        "required": "Выберите ранг"
+      },
+      "goal": {
+        "label": "Цель",
+        "placeholder": "Выберите цель",
+        "required": "Выберите цель"
+      },
+      "description": {
+        "label": "Описание",
+        "placeholder": "Расскажите о себе, стиле игры, что вы ищете...",
+        "required": "Введите описание"
+      },
+      "age": {
+        "label": "Возраст (необязательно)",
+        "placeholder": "Ваш возраст"
+      },
+      "playTime": {
+        "label": "Время игры (необязательно)",
+        "placeholder": "Выберите время"
+      },
+      "createButton": "Создать анкету"
+    }
+  },
+  "servers": {
+    "EUW": "EUW",
+    "EUNE": "EUNE",
+    "NA": "NA",
+    "KR": "KR",
+    "BR": "BR",
+    "LAN": "LAN",
+    "LAS": "LAS",
+    "OCE": "OCE",
+    "RU": "RU",
+    "TR": "TR",
+    "JP": "JP"
+  },
+  "roles": {
+    "Top": "Top",
+    "Jungle": "Jungle",
+    "Mid": "Mid",
+    "ADC": "ADC",
+    "Support": "Support"
+  },
+  "ranks": {
+    "Iron": "Iron",
+    "Bronze": "Bronze",
+    "Silver": "Silver",
+    "Gold": "Gold",
+    "Platinum": "Platinum",
+    "Diamond": "Diamond",
+    "Master": "Master",
+    "Grandmaster": "Grandmaster",
+    "Challenger": "Challenger"
+  },
+  "goals": {
+    "Ranked": "Ranked",
+    "Normal": "Normal",
+    "Flex": "Flex",
+    "Clash": "Clash",
+    "Friends": "Friends"
+  },
+  "playTimes": {
+    "morning": "Утро (8:00-12:00)",
+    "day": "День (12:00-18:00)",
+    "evening": "Вечер (18:00-23:00)",
+    "night": "Ночь (23:00-8:00)",
+    "anytime": "Любое время"
+  }
+  ,
+  "profile": {
+    "title": "Профиль",
+    "editProfile": "Редактировать профиль",
+    "linkedAccounts": "Привязанные аккаунты",
+    "accountSettings": "Настройки аккаунта",
+    "siteStats": "Статистика на сайте",
+    "recentActivity": "Последние действия",
+    "edit": {
+      "name": "Имя",
+      "email": "Email",
+      "age": "Возраст",
+      "gender": "Пол",
+      "male": "Мужской",
+      "female": "Женский",
+      "other": "Другой",
+      "modalTitle": "Редактировать профиль",
+      "modalSubmit": "Сохранить изменения"
+    },
+    "link": {
+      "linkAccount": "Привязать аккаунт",
+      "linkNewAccount": "Привязать новый аккаунт",
+      "league": "League of Legends",
+      "telegram": "Telegram",
+      "discord": "Discord",
+      "linked": "Привязано",
+      "notLinked": "Не привязано",
+      "openLinkModal": "Привязать",
+      "modalTitle": "Привязать аккаунт League",
+      "modalSubmit": "Привязать аккаунт",
+      "modalSummonerPlaceholder": "Введите никнейм",
+      "modalTagPlaceholder": "Введите тег (например #EUW1)",
+      "modalOpggPlaceholder": "Вставьте ссылку на профиль OP.GG",
+      "modalRegion": "Регион",
+      "modalRole": "Роли",
+      "modalTag": "Тег",
+      "manualTab": "Вручную",
+      "opggTab": "Ссылка OP.GG"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "С возвращением",
+      "subtitle": "Войдите в свой аккаунт",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Войти",
+      "noAccount": "Нет аккаунта?",
+      "signUp": "Зарегистрироваться",
+      "forgotPassword": "Забыли пароль?"
+    },
+    "register": {
+      "title": "Создать аккаунт",
+      "subtitle": "Присоединяйтесь к сообществу",
+      "name": "Имя",
+      "email": "Email",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "submit": "Создать аккаунт",
+      "hasAccount": "Уже есть аккаунт?",
+      "signIn": "Войти"
+    }
+  },
+  "matchesFeed": {
+    "hotProfiles": "Горячие анкеты",
+    "hotSubtitle": "Свайпайте, чтобы найти идеального тиммейта",
+    "allProfiles": "Все анкеты",
+    "allSubtitle": "Просматривайте и фильтруйте все профили",
+    "like": "Нравится",
+    "pass": "Пропустить",
+    "noMoreProfiles": "Анкеты закончились",
+    "checkBackLater": "Загляните позже, чтобы найти новых игроков"
+  },
+  "chats": {
+    "title": "Чаты",
+    "subtitle": "Ваши разговоры",
+    "newChat": "Новый чат",
+    "noChats": "Пока нет чатов",
+    "noChatsSub": "Начните разговор с игроком",
+    "online": "В сети",
+    "offline": "Не в сети",
+    "lastSeen": "Был(а) в сети",
+    "typing": "печатает...",
+    "messageStatus": {
+      "sent": "Отправлено",
+      "delivered": "Доставлено",
+      "read": "Прочитано"
+    },
+    "typeMessage": "Напишите сообщение...",
+    "send": "Отправить",
+    "mute": "Выключить уведомления",
+    "unmute": "Включить уведомления",
+    "viewProfile": "Просмотр профиля",
+    "deleteChat": "Удалить чат",
+    "matchedProfile": "Ссылка на анкету",
+    "chatNotFound": "Чат не найден",
+    "minutesAgo": "{{count}}м назад",
+    "hoursAgo": "{{count}}ч назад",
+    "daysAgo": "{{count}}д назад",
+    "justNow": "Только что"
+  }
+}

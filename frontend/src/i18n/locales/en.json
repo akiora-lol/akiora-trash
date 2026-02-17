@@ -1,0 +1,265 @@
+{
+  "common": {
+    "home": "Home",
+    "profile": "Profile",
+    "matches": "Matches",
+    "createMatch": "Create Match",
+    "search": "Search",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "back": "Back",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "contact": "Contact",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "header": {
+    "title": "AkioraGG",
+    "nav": {
+      "home": "Home",
+      "matches": "Matches",
+      "profile": "Profile",
+      "chats": "Chats"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "noNotifications": "No new notifications"
+    }
+  },
+  "footer": {
+    "description": "Platform for finding teammates and friends in League of Legends. Create profiles, find players and climb the ranks together.",
+    "navigation": "Navigation",
+    "about": "About",
+    "support": "Support",
+    "aboutUs": "About Us",
+    "rules": "Rules",
+    "contacts": "Contacts",
+    "faq": "FAQ",
+    "help": "Help",
+    "community": "Community",
+    "reportBug": "Report Bug",
+    "privacy": "Privacy Policy",
+    "copyright": "© 2025 AkioraGG. All rights reserved."
+  },
+  "matches": {
+    "title": "Find Players",
+    "subtitle": "Find teammates and friends to play League of Legends with",
+    "createButton": "Create Profile",
+    "searchPlaceholder": "Search by name or description...",
+    "filters": {
+      "allServers": "All Servers",
+      "allRanks": "All Ranks",
+      "allRoles": "All Roles",
+      "allGoals": "All Goals"
+    },
+    "found": "Profiles found",
+    "notFound": {
+      "title": "No profiles found",
+      "description": "Try changing filters or create your own profile"
+    },
+    "card": {
+      "roles": "Roles",
+      "description": "Description",
+      "age": "Age",
+      "playTime": "Play Time",
+      "goal": "Goal"
+    }
+  },
+  "createMatch": {
+    "title": "Create Profile",
+    "subtitle": "Fill in your information to find teammates",
+    "backToMatches": "Back to Matches",
+    "form": {
+      "title": "Basic Information",
+      "subtitle": "Enter your gaming data",
+      "username": {
+        "label": "Username",
+        "placeholder": "Enter your in-game nickname",
+        "required": "Enter username"
+      },
+      "server": {
+        "label": "Server",
+        "placeholder": "Select server",
+        "required": "Select server"
+      },
+      "roles": {
+        "label": "Roles",
+        "required": "Select at least one role"
+      },
+      "rank": {
+        "label": "Rank",
+        "placeholder": "Select rank",
+        "required": "Select rank"
+      },
+      "goal": {
+        "label": "Goal",
+        "placeholder": "Select goal",
+        "required": "Select goal"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Tell us about yourself, playstyle, what you're looking for...",
+        "required": "Enter description"
+      },
+      "age": {
+        "label": "Age (optional)",
+        "placeholder": "Your age"
+      },
+      "playTime": {
+        "label": "Play Time (optional)",
+        "placeholder": "Select time"
+      },
+      "createButton": "Create Profile"
+    }
+  },
+  "servers": {
+    "EUW": "EUW",
+    "EUNE": "EUNE",
+    "NA": "NA",
+    "KR": "KR",
+    "BR": "BR",
+    "LAN": "LAN",
+    "LAS": "LAS",
+    "OCE": "OCE",
+    "RU": "RU",
+    "TR": "TR",
+    "JP": "JP"
+  },
+  "roles": {
+    "Top": "Top",
+    "Jungle": "Jungle",
+    "Mid": "Mid",
+    "ADC": "ADC",
+    "Support": "Support"
+  },
+  "ranks": {
+    "Iron": "Iron",
+    "Bronze": "Bronze",
+    "Silver": "Silver",
+    "Gold": "Gold",
+    "Platinum": "Platinum",
+    "Diamond": "Diamond",
+    "Master": "Master",
+    "Grandmaster": "Grandmaster",
+    "Challenger": "Challenger"
+  },
+  "goals": {
+    "Ranked": "Ranked",
+    "Normal": "Normal",
+    "Flex": "Flex",
+    "Clash": "Clash",
+    "Friends": "Friends"
+  },
+  "playTimes": {
+    "morning": "Morning (8:00-12:00)",
+    "day": "Day (12:00-18:00)",
+    "evening": "Evening (18:00-23:00)",
+    "night": "Night (23:00-8:00)",
+    "anytime": "Any time"
+  }
+  ,
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "linkedAccounts": "Linked Accounts",
+    "accountSettings": "Account Settings",
+    "siteStats": "Site Statistics",
+    "recentActivity": "Recent Activity",
+    "edit": {
+      "name": "Name",
+      "email": "Email",
+      "age": "Age",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "modalTitle": "Edit Profile",
+      "modalSubmit": "Save Changes"
+    },
+    "link": {
+      "linkAccount": "Link account",
+      "linkNewAccount": "Link new account",
+      "league": "League of Legends",
+      "telegram": "Telegram",
+      "discord": "Discord",
+      "linked": "Linked",
+      "notLinked": "Not linked",
+      "openLinkModal": "Link",
+      "modalTitle": "Link League account",
+      "modalSubmit": "Link account",
+      "modalSummonerPlaceholder": "Enter summoner name",
+      "modalTagPlaceholder": "Enter tag (e.g. #EUW1)",
+      "modalOpggPlaceholder": "Paste OP.GG profile URL",
+      "modalRegion": "Region",
+      "modalRole": "Roles",
+      "modalTag": "Tag",
+      "manualTab": "Manual",
+      "opggTab": "OP.GG Link"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Log in to your account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "forgotPassword": "Forgot password?"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the community",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
+  "matchesFeed": {
+    "hotProfiles": "Hot Profiles",
+    "hotSubtitle": "Swipe to find your perfect teammate",
+    "allProfiles": "All Profiles",
+    "allSubtitle": "Browse and filter all profiles",
+    "like": "Like",
+    "pass": "Pass",
+    "noMoreProfiles": "No more profiles",
+    "checkBackLater": "Check back later for new players"
+  },
+  "chats": {
+    "title": "Chats",
+    "subtitle": "Your conversations",
+    "newChat": "New Chat",
+    "noChats": "No chats yet",
+    "noChatsSub": "Start a conversation with a player",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen",
+    "typing": "typing...",
+    "messageStatus": {
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Read"
+    },
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "mute": "Mute notifications",
+    "unmute": "Unmute notifications",
+    "viewProfile": "View profile",
+    "deleteChat": "Delete chat",
+    "matchedProfile": "Profile reference",
+    "chatNotFound": "Chat not found",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "justNow": "Just now"
+  }
+}
