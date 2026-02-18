@@ -1,5 +1,3 @@
-# services/session_service.py
-import json
 from datetime import UTC, datetime
 
 
@@ -7,62 +5,36 @@ from uuid import UUID
 
 from pydantic import EmailStr
 
-from models.session_data import SessionData
-from utils.redis import get_redis_client
+from models.session import Session
+from repos.session import SessionRepo
 
 
 class SessionService:
-    def __init__(self):
-        self.redis = get_redis_client()
-        self.prefix = "sid:"
+    def __init__(self, repo: SessionRepo):
+        self.repo = repo
 
-    async def create_session(self, email: EmailStr, provider: str, client_host) -> UUID:
-        session_data = SessionData(
+    async def create_session(
+        self,
+        email: EmailStr,
+        provider: str,
+    ) -> UUID:
+        session_data = Session(
             email=email,
-            ip_address=client_host,
             auth_source=provider,
         )
-        await session_data.save()
+        data = await self.repo.create(session_data)
 
-        await self.redis.setex(
-            f"{self.prefix}{session_data.id}",
-            int(
-                (
-                    session_data.exipres_at.astimezone(tz=UTC) - datetime.now(tz=UTC)
-                ).total_seconds()
-            ),
-            session_data.model_dump_json(),
-        )
+        return data.id
 
-        return session_data.id
+    async def get_session(self, session_id: UUID) -> Session | None:
 
-    async def get_session(self, session_id: UUID) -> SessionData | None:
-        """Получение данных сессии"""
-        data = SessionData(
-            **json.loads(await self.redis.get(f"{self.prefix}{session_id}"))
-        )
-        if not data:
-            data = await SessionData.get(session_id)
-            if not data:
-                return None
-
-        data.last_activity = datetime.now(tz=UTC)
-
-        await self.redis.setex(
-            f"{self.prefix}{session_id}",
-            int(
-                (
-                    data.exipres_at.astimezone(tz=UTC) - datetime.now(tz=UTC)
-                ).total_seconds()
-            ),
-            data.model_dump_json(),
-        )
+        data = await self.repo.get(session_id)
 
         return data
 
     async def update_session_user_info(
         self, session_id: UUID, user_info: dict
-    ) -> SessionData | None:
+    ) -> Session | None:
         """Обновление данных сессии"""
         session = await self.get_session(session_id)
         if not session:
@@ -88,7 +60,7 @@ class SessionService:
 
         return session
 
-    async def update_session(self, session_id: UUID, **kwargs) -> SessionData | None:
+    async def update_session(self, session_id: UUID, **kwargs) -> Session | None:
         """Обновление данных сессии"""
         session = await self.get_session(session_id)
         if not session:
@@ -113,7 +85,7 @@ class SessionService:
 
     async def delete_session(self, session_id: UUID):
         """Удаление сессии"""
-        sd = await SessionData.get(session_id)
+        sd = await Session.get(session_id)
         if sd:
             await sd.delete()
         await self.redis.delete(f"{self.prefix}{session_id}")

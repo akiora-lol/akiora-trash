@@ -1,7 +1,7 @@
 from beanie import Document
-from pydantic import Field, EmailStr, IPvAnyAddress, field_serializer
+from pydantic import Field, EmailStr, field_serializer
 from uuid import UUID, uuid4
-from typing import Any, Literal
+
 from datetime import datetime, timedelta, UTC
 
 
@@ -13,12 +13,12 @@ def session_expires_at():
     return datetime.now(tz=UTC) + timedelta(days=30)
 
 
-class SessionData(Document):
+class Session(Document):
     id: UUID = Field(default_factory=uuid4)
     email: EmailStr
     created_at: datetime = Field(default_factory=time_now)
     last_activity: datetime = Field(default_factory=time_now)
-    ip_address: IPvAnyAddress
+
     exipres_at: datetime = Field(default_factory=session_expires_at)
     auth_source: str
     custom_data: dict = Field(default_factory=dict)
@@ -40,5 +40,5 @@ class SessionData(Document):
         return dt.isoformat()
 
     class Settings:
-        bson_encoders = {UUID: str, IPvAnyAddress: str}
+        bson_encoders = {UUID: str}
         keep_nulls = False
