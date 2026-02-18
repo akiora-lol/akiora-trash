@@ -127,13 +127,16 @@ class AuthService:
 
         if not self.broker:
             raise
-
-        ses_id = await self.session_service.create_session(email, provider)
-        # user_data = await self.broker.request(
-        #     stream="user-rpc",
-        #     message={"email": email, "sid": str(ses_id)},
-        # )
-        # await self.session_service.update_session_user_info(ses_id, user_data)
+        user_data = None
+        try:
+            user_data = await self.broker.request(
+                stream="user-rpc", message={"email": email}, timeout=5
+            )
+        except TimeoutError as e:
+            # TODO amqp logic and maybe retries
+            ...
+        data = user_data.body if user_data else None
+        ses_id = await self.session_service.create_session(email, provider, data)
 
         response = RedirectResponse(url="/dashboard", status_code=303)
         signed_ses = self.sign_session(ses_id)

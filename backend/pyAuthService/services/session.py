@@ -14,13 +14,12 @@ class SessionService:
         self.repo = repo
 
     async def create_session(
-        self,
-        email: EmailStr,
-        provider: str,
+        self, email: EmailStr, provider: str, user_data: dict | None = None
     ) -> UUID:
         session_data = Session(
             email=email,
             auth_source=provider,
+            custom_data={"user": user_data},
         )
         data = await self.repo.create(session_data)
 
