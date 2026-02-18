@@ -2,72 +2,144 @@ import hashlib
 import hmac
 import logging
 
-from config.settings import settings
-from fastapi import HTTPException, Request
+from settings import Settings
+from fastapi import Request
 from fastapi.responses import RedirectResponse
-from fastapi_sso import DiscordSSO
-from utils.broker import get_rabbit_broker
+from fastapi_sso import SSOBase
+from pydantic import EmailStr
+from shortuuid import encode as short_encode, decode as short_decode
+from uuid import UUID, uuid4
+import shortuuid
+from typing import Literal
+from faststream.redis import RedisBroker
+from services.redis import RedisService
 from services.session import SessionService
-from config.messaging import auth_exchange
+from services.mail import MailSender
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-SECRET_KEY = settings.secret_key
-
-
-def sign_session(session_id: str) -> str:
-
-    signature = hmac.new(
-        SECRET_KEY.encode(), session_id.encode(), hashlib.sha256
-    ).hexdigest()
-    return f"{session_id}.{signature}"
-
-
-def verify_session(signed_id: str) -> str:
-
-    try:
-        session_id, signature = signed_id.rsplit(".", 1)
-        expected_signature = hmac.new(
-            SECRET_KEY, session_id.encode(), hashlib.sha256
-        ).hexdigest()
-
-        if hmac.compare_digest(signature, expected_signature):
-            return session_id
-    except (ValueError, AttributeError):
-        pass
-    raise HTTPException(status_code=401, detail="Invalid session signature")
-
-
 class AuthService:
-    def __init__(self):
-        self.broker = get_rabbit_broker()
-        self.session_service = SessionService()
+    def __init__(
+        self,
+        ss: SessionService,
+        broker: RedisBroker,
+        mail_service: MailSender,
+        redis_service: RedisService,
+        settings: Settings,
+        sso_dict: dict[str, SSOBase],
+    ):
+        self.broker = broker
+        self.session_service = ss
+        self.SECRET_KEY = settings.secret_key
+        self.sso_dict = sso_dict
+        self.redis = redis_service
+        self.mail_serive = mail_service
 
-    async def verify_user(self, sso: DiscordSSO, request: Request):
+    def sign_session(self, session_id: UUID) -> str:
 
-        client_host = request.client.host
+        signature = hmac.new(
+            self.SECRET_KEY.encode(), str(session_id).encode(), hashlib.sha256
+        ).hexdigest()
+        enc = short_encode(session_id)
+        return f"{enc}.{signature}"
 
-        async with sso:
+    def verify_session(self, signed_id: str) -> UUID | None:
+
+        try:
+            session_id, signature = signed_id.rsplit(".", 1)
+            session_id = short_decode(session_id)
+            expected_signature = hmac.new(
+                self.SECRET_KEY.encode(), str(session_id).encode(), hashlib.sha256
+            ).hexdigest()
+
+            if hmac.compare_digest(signature, expected_signature):
+                return UUID(session_id)
+        except (ValueError, AttributeError):
+            return None
+
+    def get_sso(self, sso: Literal["yandex", "discord"]):
+        if sso != "email":
+            return self.sso_dict.get(sso)
+
+    async def test(self):
+        for i in range(500):
+            await self.broker.publish(
+                stream="auth-rpc", message="12345", maxlen=1000000
+            )
+            await self.broker.publish(
+                stream="auth-rpc", message={"email": 123, "dog": "boom"}, maxlen=1000000
+            )
+        return "done"
+
+    async def init_verify_user_email(self, email: EmailStr):
+        ver_ses_id = uuid4()
+        code = shortuuid.ShortUUID().random(length=6)
+        await self.redis.create(
+            prefix="cvid:", key=str(ver_ses_id), value=code, ttl=10 * 60
+        )
+        self.mail_serive.send_email(email, "Code verification", str(code))
+        response = RedirectResponse(url="/auth/email/login/finish", status_code=303)
+
+        response.set_cookie(
+            key="email",
+            value=email,
+            httponly=True,
+            # secure=True,
+            samesite="lax",
+            max_age=30 * 24 * 60 * 60,
+        )
+
+        response.set_cookie(
+            key="cvid",
+            value=str(ver_ses_id),
+            httponly=True,
+            # secure=True,
+            samesite="lax",
+            max_age=30 * 24 * 60 * 60,
+        )
+        return response
+
+    async def finish_verify_user_email(self, email: EmailStr, cvid: str, code: str):
+
+        req_code = await self.redis.get(f"cvid:{cvid}")
+        print(req_code, code)
+        if req_code == code:
+            return await self.register_user(email, "email")
+        response = RedirectResponse(url="/auth-error")
+
+        return response
+
+    async def verify_user_oauth(
+        self, provider: Literal["yandex", "discord"], request: Request
+    ):
+
+        async with self.get_sso(provider) as sso:
             logger.info("init sso")
             user = await sso.verify_and_process(request)
 
             if user:
-                return await self.register_user(user.email, user.provider, client_host)
+                return await self.register_user(user.email, user.provider)
         return RedirectResponse(url="/auth-error")
 
-    async def register_user(self, email, provider, client_host):
+    async def register_user(self, email, provider):
 
-        ses_id = await self.session_service.create_session(email, provider, client_host)
+        if not self.broker:
+            raise
+        user_data = None
+        try:
+            user_data = await self.broker.request(
+                stream="user-rpc", message={"email": email}, timeout=5
+            )
+        except TimeoutError as e:
+            # TODO amqp logic and maybe retries
+            ...
+        data = user_data.body if user_data else None
+        ses_id = await self.session_service.create_session(email, provider, data)
 
-        await self.broker.publish(
-            exchange=auth_exchange,
-            routing_key="auth.session.created",
-            message={"email": email, "sid": str(ses_id)},
-        )
         response = RedirectResponse(url="/dashboard", status_code=303)
-        signed_ses = sign_session(str(ses_id))
+        signed_ses = self.sign_session(ses_id)
         response.set_cookie(
             key="sid",
             value=signed_ses,
@@ -77,3 +149,11 @@ class AuthService:
             max_age=30 * 24 * 60 * 60,
         )
         return response
+
+    async def verify_session_handler(self, signed_sid: str):
+        id = self.verify_session(signed_sid)
+        if id:
+            ses = await self.session_service.get_session(id)
+            return ses.model_dump()
+
+        return None

@@ -1,3 +1,3 @@
-from .session_data import SessionData
+from .session import Session
 
-__all__ = ["SessionData"]
+__all__ = ["Session"]

@@ -3,9 +3,10 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from routes import discord_router, yandex_router
-from utils import api_on_shutdown, api_on_startup, get_rabbit_broker
-
+from routes.api import router
+from dishka.integrations.fastapi import setup_dishka
+from ioc import container
+from services.database import connect_db
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -13,16 +14,15 @@ logger.setLevel(logging.INFO)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
-    await api_on_startup()
+    await connect_db()
     yield
-    await api_on_shutdown()
 
 
 app = FastAPI(root_path="/auth", lifespan=lifespan)
 
-
 origins = ["*"]
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -31,9 +31,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(discord_router)
-app.include_router(yandex_router)
 
+app.include_router(router)
+
+
+setup_dishka(container=container, app=app)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, proxy_headers=True)
