@@ -19,7 +19,7 @@ class SessionRepo:
                 await self.redis.create(
                     prefix=self.prefix,
                     key=str(data.id),
-                    value=data.model_dump_json(),
+                    value=data.model_dump(),
                     ttl=int(
                         (
                             data.exipres_at.astimezone(tz=UTC) - datetime.now(tz=UTC)
@@ -34,7 +34,7 @@ class SessionRepo:
         await self.redis.create(
             prefix=self.prefix,
             key=str(data.id),
-            value=data.model_dump_json(),
+            value=data.model_dump(),
             ttl=int(
                 (
                     data.exipres_at.astimezone(tz=UTC) - datetime.now(tz=UTC)

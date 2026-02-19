@@ -7,45 +7,15 @@ from redis.asyncio import Redis
 from faststream.redis import RedisBroker
 
 from settings import Settings
-from fastapi_sso.sso.yandex import YandexSSO
-from fastapi_sso.sso.discord import DiscordSSO
-from fastapi_sso import SSOBase
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.asynchronous.database import AsyncDatabase
 from dishka.integrations.fastapi import (
     FastapiProvider,
 )
-from services.mail import MailSender
+from services.session import SessionService
 from services.redis import RedisService
-
-
-class SSOProvider(Provider):
-    @provide(scope=Scope.APP)
-    def get_yandex_sso(self, settings: Settings) -> YandexSSO:
-        return YandexSSO(
-            client_id=settings.yandex_cid,
-            client_secret=settings.yandex_cs,
-            redirect_uri="http://localhost:8000/auth/yandex/callback",
-            allow_insecure_http=True,
-            scope=["login:email"],
-        )
-
-    @provide(scope=Scope.APP)
-    def get_discord_sso(self, settings: Settings) -> DiscordSSO:
-        return DiscordSSO(
-            client_id=settings.discord_cid,
-            client_secret=settings.discord_cs,
-            redirect_uri="http://localhost:8000/auth/discord/callback",
-            allow_insecure_http=True,
-            scope=["email"],
-        )
-
-    @provide(scope=Scope.APP)
-    def get_sso_dict(
-        self, yandex_sso: YandexSSO, discord_sso: DiscordSSO
-    ) -> dict[str, SSOBase]:
-        return {"yandex": yandex_sso, "discord": discord_sso}
+from services.user import UserService
 
 
 class ConfigProvider(Provider):
@@ -58,17 +28,11 @@ class ServiceProvider(Provider):
     scope = Scope.APP
 
     @provide(scope=Scope.APP)
-    def get_mail_service(self, settings: Settings) -> MailSender:
-        return MailSender(
-            settings.smtp_server,
-            settings.smtp_port,
-            settings.email_address,
-            settings.email_password,
-        )
-
-    @provide(scope=Scope.APP)
     async def get_redis_broker(self, settings: Settings) -> RedisBroker:
-        broker = RedisBroker(url=settings.redis_url, max_connections=20)
+        broker = RedisBroker(
+            url=settings.redis_url,
+            max_connections=20,
+        )
         await broker.connect()
         return broker
 
@@ -96,10 +60,17 @@ class ServiceProvider(Provider):
     def get_redis_service(self, redis_client: Redis) -> RedisService:
         return RedisService(redis_client)
 
+    @provide(scope=Scope.REQUEST)
+    def get_session_service(self, redis_broker: RedisBroker) -> SessionService:
+        return SessionService(redis_broker)
+
+    @provide(scope=Scope.REQUEST)
+    def get_user_service(self, redis_broker: RedisBroker) -> UserService:
+        return UserService(redis_broker)
+
 
 container = make_async_container(
     ServiceProvider(),
     ConfigProvider(),
-    SSOProvider(),
     FastapiProvider(),
 )

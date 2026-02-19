@@ -23,7 +23,7 @@ SocialKey = Literal["vk", "tg", "ds", "yt", "tw", "sc"]
 class Social(BaseModel):
     type: Literal["personal", "public"]
     link: str
-    hidden: False
+    hidden: bool = Field(default=False)
 
 
 class User(Document):
@@ -36,6 +36,10 @@ class User(Document):
     roles: list[str] = Field(default_factory=default_roles)
     created_at: datetime = Field(default_factory=time_now)
     last_updated: datetime = Field(default_factory=time_now)
+
+    @field_serializer("id")
+    def serialize_id(self, id: UUID):
+        return str(id)
 
     @field_serializer("created_at")
     def serialize_ca(self, dt: datetime):

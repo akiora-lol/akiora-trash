@@ -13,7 +13,7 @@ router = RedisRouter()
 
 @router.subscriber(stream=StreamSub("auth.rpc", maxlen=100))
 async def validate_sid(
-    msg: str | dict,
+    msg: dict,
     logger: Logger,
     auth_service: FromDishka[AuthService],
 ):

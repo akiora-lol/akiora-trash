@@ -4,8 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import v1_router
 import uvicorn
 import logging
-
-from utils import api_on_startup, api_on_shutdown
+from services.database import connect_db
+from ioc import container
+from dishka.integrations.fastapi import setup_dishka
 
 logger = logging.getLogger(__name__)
 
@@ -13,12 +14,12 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    await api_on_startup()
+    await connect_db()
     yield
-    await api_on_shutdown()
 
 
 app = FastAPI(root_path="/user", lifespan=lifespan)
+setup_dishka(container, app)
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,

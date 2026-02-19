@@ -1,55 +1,43 @@
-from fastapi import APIRouter, HTTPException, Cookie, Depends
+from fastapi import APIRouter, HTTPException, Cookie, Depends, status
+from dishka.integrations.fastapi import FromDishka, DishkaRoute, inject
 
-from schemas.v1.user import CreateUser, EmailRequest, SimpleUpdateRequest
+# from schemas.v1.user import CreateUser, EmailRequest, SimpleUpdateRequest
 from models.user import User
-from repos.user import UserRepo
-from services.session import SessionDescriptor
+from services.user import UserService
+from services.session import SessionService
+
 from typing import Annotated
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", route_class=DishkaRoute)
 
 
 class Cookies(BaseModel):
-    session_id: str
+    sid: str
+    model_config = ConfigDict(extra="ignore")
 
 
-@router.post("/")
-async def create_user(create_data: CreateUser) -> User:
-    user = await UserRepo.create_user(email=create_data.email)
-    if user:
-        return user
-    raise HTTPException(status_code=409, detail="Email taken")
-
-
-@router.patch("/")
-async def update_user(
-    update_data: SimpleUpdateRequest,
+@inject
+async def get_current_user_id(
     cookies: Annotated[Cookies, Cookie()],
-    sd: SessionDescriptor = Depends(SessionDescriptor),
-) -> User:
-    user_id = await sd.get_user_id_by_session_id(cookies.session_id)
-    print(user_id)
-    if user_id:
-        user = await UserRepo.update_user(user_id, update_data)
-        return user
-    raise HTTPException(status_code=404)
+    sd: FromDishka[SessionService],
+) -> str:
+    user_id = await sd.get_user_id_by_sid(cookies.sid)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session"
+        )
+    return str(user_id)
 
 
-@router.get("/{id}")
-async def get_user(id: UUID) -> User | None:
-    user = await UserRepo.get_user_by_id(id)
+@router.get("/me")
+async def get_user(
+    us: FromDishka[UserService],
+    uid=Depends(get_current_user_id),
+):
+
+    user = await us.get_user_by_id(uid)
     if user:
         return user
-    raise HTTPException(status_code=404)
-
-
-@router.post("/email")
-async def get_user_by_email(emailR: EmailRequest) -> User | None:
-
-    user = await User.find_one(User.email == emailR.email)
-    if user:
-        return user
-
     raise HTTPException(status_code=404)
