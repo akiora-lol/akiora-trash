@@ -130,7 +130,7 @@ class AuthService:
         user_data = None
         try:
             user_data = await self.broker.request(
-                stream="user-rpc", message={"email": email}, timeout=5
+                stream="user.rpc", message={"email": email, "action": "get"}, timeout=5
             )
         except TimeoutError as e:
             # TODO amqp logic and maybe retries
