@@ -2,23 +2,23 @@ from faststream.redis import RedisRouter, RedisMessage, Redis, StreamSub
 from faststream import Logger
 from dishka import FromDishka
 
-from services import AuthService
+from services.user import UserService
 from settings import Settings
-
+import json
 
 settings = Settings()
 
 router = RedisRouter()
 
 
-@router.subscriber(stream=StreamSub("auth.rpc", maxlen=100))
-async def validate_sid(
+@router.subscriber(stream=StreamSub("user.rpc"))
+async def handle_rpc(
     msg: dict,
     logger: Logger,
-    auth_service: FromDishka[AuthService],
+    user_service: FromDishka[UserService],
 ):
     logger.info(f"incoming msg: {msg}")
-    data = await auth_service.verify_session_handler(msg)
+    data = await user_service.handle_rpc(msg)
     logger.info(f"returm msg: {data}")
 
-    return data
+    return json.dumps(data)

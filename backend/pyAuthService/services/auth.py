@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import json
 import logging
 
 from settings import Settings
@@ -39,24 +40,31 @@ class AuthService:
 
     def sign_session(self, session_id: UUID) -> str:
 
+        enc = short_encode(session_id)
+
         signature = hmac.new(
             self.SECRET_KEY.encode(), str(session_id).encode(), hashlib.sha256
         ).hexdigest()
-        enc = short_encode(session_id)
+
         return f"{enc}.{signature}"
 
     def verify_session(self, signed_id: str) -> UUID | None:
-
         try:
-            session_id, signature = signed_id.rsplit(".", 1)
-            session_id = short_decode(session_id)
+            session_id_enc, signature = signed_id.rsplit(".", 1)
+
+            session_id = short_decode(session_id_enc)
+
             expected_signature = hmac.new(
-                self.SECRET_KEY.encode(), str(session_id).encode(), hashlib.sha256
+                self.SECRET_KEY.encode(),
+                str(session_id).encode(),
+                hashlib.sha256,
             ).hexdigest()
 
             if hmac.compare_digest(signature, expected_signature):
-                return UUID(session_id)
-        except (ValueError, AttributeError):
+                return session_id
+
+        except (ValueError, AttributeError, KeyError) as e:
+            print(f"Verification error: {e}")
             return None
 
     def get_sso(self, sso: Literal["yandex", "discord"]):
@@ -130,12 +138,12 @@ class AuthService:
         user_data = None
         try:
             user_data = await self.broker.request(
-                stream="user-rpc", message={"email": email}, timeout=5
+                stream="user.rpc", message={"email": email, "action": "get"}, timeout=5
             )
         except TimeoutError as e:
             # TODO amqp logic and maybe retries
             ...
-        data = user_data.body if user_data else None
+        data = json.loads(user_data.body) if user_data else None
         ses_id = await self.session_service.create_session(email, provider, data)
 
         response = RedirectResponse(url="/dashboard", status_code=303)
@@ -150,8 +158,10 @@ class AuthService:
         )
         return response
 
-    async def verify_session_handler(self, signed_sid: str):
+    async def verify_session_handler(self, msg: dict):
+        signed_sid = msg.get("sid")
         id = self.verify_session(signed_sid)
+
         if id:
             ses = await self.session_service.get_session(id)
             return ses.model_dump()
