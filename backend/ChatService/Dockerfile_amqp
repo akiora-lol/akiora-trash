@@ -16,4 +16,4 @@ ENV PYTHONPATH=/app
 
 # Запуск приложения
 WORKDIR /app/ChatService
-CMD ["python", "main_amqp.py"]
+CMD ["python", "worker.py"]

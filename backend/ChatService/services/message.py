@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class MessageService:
-    def __init__(self):
-        self.message_repo = MessageRepo()
-        self.chat_service = ChatService()
+    def __init__(self, chat_service: ChatService, message_repo: MessageRepo):
+        self.message_repo = message_repo
+        self.chat_service = chat_service
 
     async def create_message(self, user_id: UUID, event: CreateMessage) -> Message:
         if event.receiver_type == "chat":

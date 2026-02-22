@@ -18,6 +18,7 @@ class Reaction(BaseModel):
     emote_id: str
     user_id: str
 
+
 class Message(Document):
     id: UUID = Field(default_factory=uuid4)
     chat_id: UUID

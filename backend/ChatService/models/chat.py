@@ -12,7 +12,7 @@ def utc_now():
 class Chat(Document):
     id: UUID = Field(default_factory=uuid4)
     owner_id: UUID
-    owner_type: Literal["system", "club", "tournament"] = "system"
+    owner_type: Literal["system", "club", "tournament", "game"] = "system"
     type: Literal["private", "public"] = "private"
 
     status: Literal["active", "frozen"] = "active"
