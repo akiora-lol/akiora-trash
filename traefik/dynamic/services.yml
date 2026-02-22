@@ -1,0 +1,46 @@
+# Динамическая конфигурация роутеров и сервисов
+http:
+  routers:
+    auth-api:
+      rule: "PathPrefix(`/api/auth`)"
+      entryPoints:
+        - web
+      middlewares:
+        - auth-stripprefix
+      service: auth-api-service
+
+    community-api:
+      rule: "PathPrefix(`/api/community`)"
+      entryPoints:
+        - web
+      middlewares:
+        - community-stripprefix
+      service: community-api-service
+
+  middlewares:
+    auth-stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/api/auth"
+
+    community-stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/api/community"
+
+  services:
+    auth-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://auth.api:8000"
+        healthCheck:
+          path: /health
+          interval: 30s
+
+    community-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://community.api:8000"
+        healthCheck:
+          path: /health
+          interval: 30s

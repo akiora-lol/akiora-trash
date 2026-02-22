@@ -1,0 +1,203 @@
+version: '3.9'
+
+services: 
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro    
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+    networks:
+      - backend
+    depends_on:
+      - authservice
+      - communityservice
+    restart: unless-stopped
+
+  redis:
+    image: redis:8.4.0
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb  
+    ports:
+      - "27017:27017"
+    volumes:
+      - akiora_py_db_data:/data/db
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - backend
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      # Connects the UI to the 'redis' service defined above
+      REDIS_HOSTS: local:redis:6379 
+    ports:
+      - 8082:8081 # Access the UI at http://localhost:8082
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+ 
+  authservice:
+    build:
+      context: ./backend
+      dockerfile: AuthService/Dockerfile_api
+    container_name: auth.api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:   
+      MONGODB_DB_NAME: auth_db      
+      APP_NAME: auth.api
+      LOG_LEVEL: INFO
+    depends_on:
+   
+      - redis    
+      - mongodb 
+    networks:
+      - backend
+    restart: unless-stopped
+
+  authconsumer:
+    build:
+      context: ./backend
+      dockerfile: AuthService/Dockerfile_amqp
+    container_name: auth.consumer   
+    env_file:
+      - .env
+    environment:   
+      MONGODB_DB_NAME: auth_db      
+      APP_NAME: auth.consumer
+      LOG_LEVEL: INFO
+    depends_on:
+ 
+      - redis    
+      - mongodb 
+    networks:
+      - backend
+    restart: unless-stopped
+
+  communityservice:
+    build:
+      context: ./backend
+      dockerfile: CommunityService/Dockerfile_api
+    container_name: community.api
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:   
+      MONGODB_DB_NAME: community_db      
+      APP_NAME: communityservice
+      LOG_LEVEL: INFO
+    depends_on:
+
+      - redis
+      - mongodb    
+    networks:
+      - backend
+    restart: unless-stopped
+
+  communityconsumer:
+    build:
+      context: ./backend
+      dockerfile: CommunityService/Dockerfile_amqp
+    container_name: community.consumer
+ 
+    env_file:
+      - .env
+    environment:   
+      MONGODB_DB_NAME: community_db      
+      APP_NAME: communityservice
+      LOG_LEVEL: INFO
+    depends_on:
+
+      - redis
+      - mongodb    
+    networks:
+      - backend
+    restart: unless-stopped
+
+  # parserservice:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: pyParser/Dockerfile
+  #   container_name: parserservice
+  #   env_file:
+  #     - .env
+  #   environment:   
+  #     APP_NAME: ParserService
+  #     LOG_LEVEL: INFO
+  #   depends_on:
+  #     - rabbitmq
+  #     - redis    
+  #   networks:
+  #     - backend
+  #   restart: unless-stopped
+  # chatservice:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: pyChatService/Dockerfile_api
+  #   container_name: chat.api
+  #   ports:
+  #     - "8000:8000"
+  #   env_file:
+  #     - .env
+  #   environment:   
+  #     MONGODB_DB_NAME: chat_db    
+  #     APP_NAME: chat.api
+  #     LOG_LEVEL: INFO
+  #   depends_on:
+  #     - rabbitmq
+  #     - redis    
+  #     - mongodb 
+  #   networks:
+  #     - backend
+  #   restart: unless-stopped
+
+volumes:
+  akiora_py_db_data:
+  RABBIT_SETTINGS__py_data:
+  redis-data:
+
+networks:
+  backend:
+    driver: bridge

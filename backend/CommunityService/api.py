@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(root_path="/user", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 setup_dishka(container, app)
 origins = ["*"]
 app.add_middleware(
@@ -29,6 +29,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(v1_router)
+
+
+@app.get("/health")
+def health():
+    return "alive"
 
 
 if __name__ == "__main__":

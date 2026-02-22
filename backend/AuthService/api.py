@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(root_path="/auth", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 
 origins = ["*"]
 
@@ -30,6 +30,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/health")
+def health():
+    return "alive"
 
 
 app.include_router(router)
