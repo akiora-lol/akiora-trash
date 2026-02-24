@@ -21,7 +21,6 @@ SocialKey = Literal["vk", "tg", "ds", "yt", "tw", "sc"]
 
 
 class Social(BaseModel):
-    type: Literal["personal", "public"]
     link: str
     hidden: bool = Field(default=False)
 

@@ -7,6 +7,7 @@ http:
         - web
       middlewares:
         - auth-stripprefix
+        - cors-headers 
       service: auth-api-service
 
     community-api:
@@ -27,12 +28,27 @@ http:
       stripPrefix:
         prefixes:
           - "/api/community"
-
+    cors-headers:
+      headers:
+        accessControlAllowOriginList:
+          - "http://localhost:5173"
+          - "http://localhost:3000"
+        accessControlAllowCredentials: true
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+        accessControlMaxAge: 100
   services:
     auth-api-service:
       loadBalancer:
         servers:
-          - url: "http://auth.api:8000"
+          - url: "http://authservice:8000"
         healthCheck:
           path: /health
           interval: 30s
@@ -40,7 +56,7 @@ http:
     community-api-service:
       loadBalancer:
         servers:
-          - url: "http://community.api:8000"
+          - url: "http://communityservice:8000"
         healthCheck:
           path: /health
           interval: 30s

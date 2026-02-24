@@ -31,6 +31,14 @@ class SessionService:
 
         return data
 
+    async def get_session_user(self, session_id: UUID) -> Session | None:
+
+        data = await self.repo.get(session_id)
+        if data:
+            return data.custom_data.get("user")
+
+        return data
+
     async def update_session_user_info(
         self, session_id: UUID, user_info: dict
     ) -> Session | None:

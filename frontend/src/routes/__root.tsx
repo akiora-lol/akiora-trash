@@ -9,41 +9,44 @@ import { FloatingMenu } from '@/components/FloatingMenu'
 
 
 const navigationData = [
-  {
-    title: 'Home',
-    href: '#'
-  },
-  {
-    title: 'Products',
-    href: '#'
-  },
-  {
-    title: 'About Us',
-    href: '#'
-  },
-  {
-    title: 'Contacts',
-    href: '#'
-  }
+    {
+        title: 'Home',
+        href: '#'
+    },
+    {
+        title: 'Products',
+        href: '#'
+    },
+    {
+        title: 'About Us',
+        href: '#'
+    },
+    {
+        title: 'Contacts',
+        href: '#'
+    }
 ]
 export const Route = createRootRoute({
-  component: RootComponent,
+    component: RootComponent,
 })
 
 function RootComponent() {
-  return (
-    <React.Fragment>
-     
-        
-        <Navbar  navigationData={navigationData}/>
-         <Outlet />
-        <BackgroundCircles className='fixed -z-10'/>
-        <FloatingMenu/>
-    
-        
-          
+    return (
+        <React.Fragment>
 
-  
-    </React.Fragment>
-  )
+
+            {/* <Navbar  navigationData={navigationData}/> */}
+
+            <Outlet />
+
+
+            <BackgroundCircles className='fixed -z-10' />
+            <FloatingMenu />
+
+
+
+
+
+        </React.Fragment>
+    )
 }

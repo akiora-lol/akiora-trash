@@ -9,16 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as MessengerRouteImport } from './routes/messenger'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as ProfileMeRouteImport } from './routes/profile/me'
 import { Route as ProfileIdRouteImport } from './routes/profile/$id'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessengerRoute = MessengerRouteImport.update({
+  id: '/messenger',
+  path: '/messenger',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -50,7 +62,9 @@ const ProfileIdRoute = ProfileIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/messenger': typeof MessengerRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/me': typeof ProfileMeRoute
   '/profile/': typeof ProfileIndexRoute
@@ -58,7 +72,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/messenger': typeof MessengerRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/me': typeof ProfileMeRoute
   '/profile': typeof ProfileIndexRoute
@@ -67,7 +83,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/messenger': typeof MessengerRoute
   '/settings': typeof SettingsRoute
+  '/welcome': typeof WelcomeRoute
   '/profile/$id': typeof ProfileIdRoute
   '/profile/me': typeof ProfileMeRoute
   '/profile/': typeof ProfileIndexRoute
@@ -77,17 +95,29 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/messenger'
     | '/settings'
+    | '/welcome'
     | '/profile/$id'
     | '/profile/me'
     | '/profile/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/settings' | '/profile/$id' | '/profile/me' | '/profile'
+  to:
+    | '/'
+    | '/login'
+    | '/messenger'
+    | '/settings'
+    | '/welcome'
+    | '/profile/$id'
+    | '/profile/me'
+    | '/profile'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/messenger'
     | '/settings'
+    | '/welcome'
     | '/profile/$id'
     | '/profile/me'
     | '/profile/'
@@ -96,7 +126,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  MessengerRoute: typeof MessengerRoute
   SettingsRoute: typeof SettingsRoute
+  WelcomeRoute: typeof WelcomeRoute
   ProfileIdRoute: typeof ProfileIdRoute
   ProfileMeRoute: typeof ProfileMeRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
@@ -104,11 +136,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messenger': {
+      id: '/messenger'
+      path: '/messenger'
+      fullPath: '/messenger'
+      preLoaderRoute: typeof MessengerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -152,7 +198,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  MessengerRoute: MessengerRoute,
   SettingsRoute: SettingsRoute,
+  WelcomeRoute: WelcomeRoute,
   ProfileIdRoute: ProfileIdRoute,
   ProfileMeRoute: ProfileMeRoute,
   ProfileIndexRoute: ProfileIndexRoute,

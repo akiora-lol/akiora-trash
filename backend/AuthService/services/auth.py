@@ -125,6 +125,7 @@ class AuthService:
 
         async with self.get_sso(provider) as sso:
             logger.info("init sso")
+
             user = await sso.verify_and_process(request)
 
             if user:
@@ -146,8 +147,9 @@ class AuthService:
         data = json.loads(user_data.body) if user_data else None
         ses_id = await self.session_service.create_session(email, provider, data)
 
-        response = RedirectResponse(url="/dashboard", status_code=303)
+        response = RedirectResponse(url="http://localhost:5173/welcome")
         signed_ses = self.sign_session(ses_id)
+
         response.set_cookie(
             key="sid",
             value=signed_ses,
@@ -155,7 +157,10 @@ class AuthService:
             # secure=True,
             samesite="lax",
             max_age=30 * 24 * 60 * 60,
+            path="/",
+            domain="localhost",
         )
+
         return response
 
     async def verify_session_handler(self, msg: dict):
