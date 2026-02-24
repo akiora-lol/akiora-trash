@@ -16,4 +16,4 @@ ENV PYTHONPATH=/app
 
 # Запуск приложения
 WORKDIR /app/pyParser
-CMD ["python", "worker.py"]
+CMD ["python", "api.py"]

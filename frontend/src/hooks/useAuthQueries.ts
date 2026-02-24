@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { authApi, type User } from '../services/api';
+import { authApi,  } from '../services/api';
+import {type User} from "@/types/user"
 import { authKeys } from '../contexts/AuthContext';
 
 // Хук для получения профиля пользователя

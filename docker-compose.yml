@@ -156,22 +156,24 @@ services:
       - backend
     restart: unless-stopped
 
-  # parserservice:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: pyParser/Dockerfile
-  #   container_name: parserservice
-  #   env_file:
-  #     - .env
-  #   environment:   
-  #     APP_NAME: ParserService
-  #     LOG_LEVEL: INFO
-  #   depends_on:
-  #     - rabbitmq
-  #     - redis    
-  #   networks:
-  #     - backend
-  #   restart: unless-stopped
+  parserservice:
+    build:
+      context: ./backend
+      dockerfile: pyParser/Dockerfile_api
+    container_name: parserservice
+    ports:
+      - "8003:8000"
+    env_file:
+      - .env
+    environment:   
+      APP_NAME: ParserService
+      LOG_LEVEL: INFO
+    depends_on:
+ 
+      - redis    
+    networks:
+      - backend
+    restart: unless-stopped
   # chatservice:
   #   build:
   #     context: ./backend

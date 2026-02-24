@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import Navbar from '@/components/Navbar'
 import { DataCard } from '@/components/data-card'
-import { AnimatedProfileMenu } from '@/components/Icon'
+import { AnimatedProfileMenu } from '@/components/AnimatedProfileMenu'
 import { BackgroundCircles } from '@/components/ui/circles'
 import Logo from '@/components/Logo'
 import { FloatingMenu } from '@/components/FloatingMenu'
@@ -41,7 +41,8 @@ function RootComponent() {
 
 
             <BackgroundCircles className='fixed -z-10' />
-            <FloatingMenu />
+            <AnimatedProfileMenu />
+            {/* <FloatingMenu /> */}
 
 
 
