@@ -24,4 +24,5 @@ dependencies = [
     "fastapi-sso>=0.20.0",
     "uvicorn>=0.40.0",
     "shortuuid>=1.0.13",
+    "opgg-py>=3.1.0",
 ]

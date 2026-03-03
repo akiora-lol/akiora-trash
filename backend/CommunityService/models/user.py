@@ -21,14 +21,15 @@ SocialKey = Literal["vk", "tg", "ds", "yt", "tw", "sc"]
 
 
 class Social(BaseModel):
-    type: Literal["personal", "public"]
     link: str
     hidden: bool = Field(default=False)
+    type: Literal["personal", "public"]
 
 
 class User(Document):
     id: UUID = Field(default_factory=uuid4)
     email: EmailStr
+    avatar: str
     nickname: str = Field(default_factory=default_name)
     gender: Literal["male", "female"] | None = None
     age: int | None = Field(default=None, min=15)

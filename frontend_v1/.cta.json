@@ -1,0 +1,22 @@
+{
+  "projectName": "frontend_v1",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "npm",
+  "includeExamples": false,
+  "tailwind": true,
+  "addOnOptions": {},
+  "envVarValues": {},
+  "git": false,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "biome",
+    "shadcn",
+    "form",
+    "paraglide",
+    "table",
+    "tanstack-query"
+  ]
+}

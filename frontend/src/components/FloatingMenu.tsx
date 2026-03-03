@@ -1,38 +1,50 @@
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { Home, Github, Twitter } from "lucide-react";
-import { FaRegUser  } from "react-icons/fa";
-import { FaRegMessage , FaRegBell  } from "react-icons/fa6";
-
+import { FaRegUser } from "react-icons/fa";
+import { FaRegMessage, FaRegBell } from "react-icons/fa6";
+import { MdOutlineSettings } from "react-icons/md";
+import { LuHeartPulse } from "react-icons/lu";
+import Logo from '@/components/Logo';
 export function FloatingMenu() {
-  const links = [
-    {
-      title: "Home",
-      icon: <Home className="h-full w-full" />,
-      href: "/",
-    },
-    {
-      title: "Profile",
-      icon: <FaRegUser className="h-full w-full" />,
-      href: "/profile/me",
-    },
-    {
-      title: "Chats",
-      icon: <FaRegMessage className="h-full w-full" />,
-      href: "/chats",
-    },
-    {
-      title: "Notifications",
-      icon: <FaRegBell className="h-full w-full" />,
-      href: "/chats",
-    },
-  ];
+    const links = [
+        {
+            title: "Home",
+            icon: <Logo rotationSpeed={10} className="h-full w-full" />,
+            href: "/",
+        },
+        {
+            title: "Profile",
+            icon: <FaRegUser className="h-full w-full" />,
+            href: "/profile/me",
+        },
+        {
+            title: "Forms",
+            icon: <LuHeartPulse className="h-full w-full" />,
+            href: "/forms",
+        },
+        {
+            title: "Messenger",
+            icon: <FaRegMessage className="h-full w-full" />,
+            href: "/messenger",
+        },
+        {
+            title: "Notifications",
+            icon: <FaRegBell className="h-full w-full" />,
+            href: "/",
+        },
+        {
+            title: "Settings",
+            icon: <MdOutlineSettings className="h-full w-full" />,
+            href: "/settings",
+        },
+    ];
 
-  return (
-   
-      <FloatingDock 
-      mobileClassName="fixed bottom-4 right-4"
-       desktopClassName="fixed bottom-4 right-1 -translate-x-1/2"
-      items={links} />
- 
-  );
+    return (
+
+        <FloatingDock
+            mobileClassName="fixed bottom-4 right-4"
+            desktopClassName="fixed "
+            items={links} />
+
+    );
 }

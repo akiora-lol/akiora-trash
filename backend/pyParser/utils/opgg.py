@@ -153,9 +153,6 @@ class OpGgStatsParser:
         if win_rate_nodes:
             stats.win_rate = " ".join([n.strip() for n in win_rate_nodes if n.strip()])
 
-        # Иконка профиля - ищем по alt атрибуту
-        # Внимание: в C# коде ищется конкретный summoner name 'ABDUL THE MENACE#meow'
-        # В реальном использовании нужно искать динамически или убрать эту проверку
         icon_nodes = doc.xpath("//img[contains(@alt, '#')]")
         if icon_nodes:
             for icon in icon_nodes:
