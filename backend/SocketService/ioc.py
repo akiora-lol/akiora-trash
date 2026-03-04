@@ -69,7 +69,7 @@ class HandlerProvider(Provider):
         Выбирает нужный обработчик на основе типа сообщения.
         """
         import msgspec
-        
+
         try:
             data = msgspec.json.decode(message_data)
             if isinstance(data, dict) and "type" in data:
@@ -98,6 +98,7 @@ class NotificationProvider(Provider):
         # Для broadcast используем ConnectionManager без привязки к user_id
         # Создаем временный менеджер для сервиса
         from managers import GlobalStorage
+
         storage = GlobalStorage()
         temp_manager = ConnectionManager(storage, "system")
         return NotificationService(temp_manager)

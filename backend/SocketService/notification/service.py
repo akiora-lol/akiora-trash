@@ -3,8 +3,8 @@ from loguru import logger
 from typing import Dict, Set, Any, Optional
 from datetime import datetime
 
-from ..managers.connection import ConnectionManager
-from ..schemas.base import MessageType
+from managers.connection import ConnectionManager
+from schemas.base import MessageType
 
 
 class NotificationMessage(msgspec.Struct):
@@ -14,9 +14,8 @@ class NotificationMessage(msgspec.Struct):
     notification_type: str
     title: str
     message: str
+    timestamp: datetime
     data: Optional[dict] = None
-    timestamp: datetime = msgspec.field(default_factory=datetime.utcnow)
-    correlation_id: Optional[str] = None
 
 
 class NotificationService:
@@ -33,7 +32,7 @@ class NotificationService:
     async def handle_notification(self, message_data: dict) -> None:
         """
         Обработка входящего уведомления и отправка пользователю.
-        
+
         Args:
             message_data: Данные уведомления из Redis pub/sub
         """
@@ -58,9 +57,7 @@ class NotificationService:
                 notification.user_id, response_message
             )
 
-            logger.info(
-                f"Уведомление отправлено пользователю {notification.user_id}"
-            )
+            logger.info(f"Уведомление отправлено пользователю {notification.user_id}")
 
         except msgspec.ValidationError as e:
             logger.error(f"Ошибка валидации сообщения уведомления: {e}")
@@ -68,19 +65,23 @@ class NotificationService:
             logger.exception(f"Ошибка при обработке уведомления: {e}")
 
     async def broadcast_notification(
-        self, notification_type: str, title: str, message: str, 
-        data: Optional[dict] = None, exclude_users: Optional[Set[str]] = None
+        self,
+        notification_type: str,
+        title: str,
+        message: str,
+        data: Optional[dict] = None,
+        exclude_users: Optional[Set[str]] = None,
     ) -> int:
         """
         Рассылка уведомления всем подключенным пользователям.
-        
+
         Args:
             notification_type: Тип уведомления
             title: Заголовок уведомления
             message: Текст уведомления
             data: Дополнительные данные
             exclude_users: Множество user_id для исключения
-            
+
         Returns:
             Количество отправленных уведомлений
         """

@@ -1,33 +1,33 @@
-import msgspec
+from msgspec import Struct
 from datetime import datetime
 from typing import Optional
 
-from .base import BaseMessage, MessageType
+from schemas.base import BaseMessage, MessageType
 
 
-class ChatMessage(BaseMessage, tag="chat.message"):
+class ChatMessage(Struct):
     """Сообщение чата от клиента"""
 
-    type: MessageType = MessageType.CHAT_MESSAGE
     room_id: str
     content: str
+    type: MessageType = MessageType.CHAT_MESSAGE
     metadata: Optional[dict] = None
 
 
-class ChatResponse(BaseMessage, tag="chat.response"):
+class ChatResponse(Struct):
     """Ответ сервера на сообщение чата"""
 
-    type: MessageType = MessageType.CHAT_RESPONSE
     room_id: str
     message_id: str
     status: str  # "sent", "delivered", "failed"
+    type: MessageType = MessageType.CHAT_TYPING
     content: Optional[str] = None
     error: Optional[str] = None
 
 
-class ChatTyping(BaseMessage, tag="chat.typing"):
+class ChatTyping(Struct):
     """Индикатор набора текста"""
 
-    type: MessageType = MessageType.CHAT_TYPING
     room_id: str
     is_typing: bool
+    type: MessageType = MessageType.CHAT_TYPING

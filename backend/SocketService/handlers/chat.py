@@ -2,9 +2,9 @@ from loguru import logger
 import uuid
 from datetime import datetime
 
-from .base import MessageHandler
-from ..schemas.chat import ChatMessage, ChatResponse
-from ..schemas.base import MessageType
+from handlers.base import MessageHandler
+from schemas.chat import ChatMessage, ChatResponse
+from schemas.base import MessageType
 
 
 class ChatMessageHandler(MessageHandler):
@@ -16,7 +16,7 @@ class ChatMessageHandler(MessageHandler):
     async def handle(self) -> dict:
         """
         Обработка сообщения чата.
-        
+
         Логика:
         1. Парсинг сообщения
         2. Валидация данных
@@ -32,6 +32,7 @@ class ChatMessageHandler(MessageHandler):
             if chat_message is None:
                 # Пробуем распарсить вручную
                 import msgspec
+
                 data = msgspec.json.decode(self.message_data)
                 chat_message = msgspec.convert(data, ChatMessage)
 

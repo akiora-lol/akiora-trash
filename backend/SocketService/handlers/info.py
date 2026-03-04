@@ -1,9 +1,9 @@
 from loguru import logger
 from typing import Any
 
-from .base import MessageHandler
-from ..schemas.info import InfoRequest, InfoResponse
-from ..schemas.base import MessageType
+from handlers.base import MessageHandler
+from schemas.info import InfoRequest, InfoResponse
+from schemas.base import MessageType
 
 
 class InfoMessageHandler(MessageHandler):
@@ -15,7 +15,7 @@ class InfoMessageHandler(MessageHandler):
     async def handle(self) -> dict:
         """
         Обработка информационного запроса.
-        
+
         Логика:
         1. Парсинг запроса
         2. Определение действия (action)
@@ -27,13 +27,16 @@ class InfoMessageHandler(MessageHandler):
         try:
             # Парсим как InfoRequest
             import msgspec
+
             data = msgspec.json.decode(self.message_data)
             info_request: InfoRequest = msgspec.convert(data, InfoRequest)
 
             logger.debug(f"Info запрос: action={info_request.action}")
 
             # Обработка в зависимости от действия
-            result = await self._process_action(info_request.action, info_request.payload)
+            result = await self._process_action(
+                info_request.action, info_request.payload
+            )
 
             response = InfoResponse(
                 action=info_request.action,
@@ -55,14 +58,16 @@ class InfoMessageHandler(MessageHandler):
                 "error": str(e),
             }
 
-    async def _process_action(self, action: str, payload: dict | None) -> dict[str, Any] | None:
+    async def _process_action(
+        self, action: str, payload: dict | None
+    ) -> dict[str, Any] | None:
         """
         Обработка конкретного действия.
-        
+
         Args:
             action: Название действия
             payload: Данные запроса
-            
+
         Returns:
             Результат выполнения или None при ошибке
         """
@@ -74,7 +79,10 @@ class InfoMessageHandler(MessageHandler):
             case "settings":
                 return await self._handle_settings()
             case "ping":
-                return {"pong": True, "timestamp": __import__("datetime").datetime.utcnow().isoformat()}
+                return {
+                    "pong": True,
+                    "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+                }
             case _:
                 logger.warning(f"Неизвестное действие: {action}")
                 return None

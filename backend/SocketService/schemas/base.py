@@ -1,6 +1,6 @@
 import msgspec
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Optional
 
 
@@ -13,9 +13,13 @@ class MessageType(str, Enum):
     ERROR = "error"
 
 
-class BaseMessage(msgspec.Struct, tag_field="type", tag=True):
+def time_now():
+    return datetime.now(UTC)
+
+
+class BaseMessage(msgspec.Struct):
     """Базовая структура для всех сообщений"""
 
     type: MessageType
-    timestamp: datetime = msgspec.field(default_factory=datetime.utcnow)
-    correlation_id: Optional[str] = None
+
+    correlation_id: str

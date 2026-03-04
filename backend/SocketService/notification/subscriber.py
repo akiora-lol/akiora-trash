@@ -1,8 +1,8 @@
 from loguru import logger
 from typing import Any, Dict
 
-from ..managers.connection import ConnectionManager
-from ..schemas.base import MessageType
+from managers.connection import ConnectionManager
+from schemas.base import MessageType
 
 
 class NotificationSubscriber:
@@ -19,7 +19,7 @@ class NotificationSubscriber:
     async def handle(self, message_data: Dict[str, Any]) -> None:
         """
         Обработка сообщения из канала уведомлений.
-        
+
         Ожидается формат:
         {
             "user_id": str,              # ID пользователя (опционально)
@@ -29,7 +29,7 @@ class NotificationSubscriber:
             "data": dict,                # Дополнительные данные (опционально)
             "correlation_id": str,       # ID корреляции (опционально)
         }
-        
+
         Args:
             message_data: Данные сообщения из Redis pub/sub
         """
@@ -63,12 +63,8 @@ class NotificationSubscriber:
                 )
             else:
                 # Broadcast всем пользователям
-                sent_count = await self._connection_manager.broadcast(
-                    response_message
-                )
-                logger.info(
-                    f"Уведомление разослано всем: {sent_count} сообщений"
-                )
+                sent_count = await self._connection_manager.broadcast(response_message)
+                logger.info(f"Уведомление разослано всем: {sent_count} сообщений")
 
         except Exception as e:
             logger.exception(f"Ошибка обработки уведомления: {e}")

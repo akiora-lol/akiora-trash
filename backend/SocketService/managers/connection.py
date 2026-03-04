@@ -2,7 +2,7 @@ from typing import Dict, Set, Optional, Any
 from fastapi import WebSocket
 from loguru import logger
 
-from .storage import GlobalStorage
+from managers.storage import GlobalStorage
 
 
 class ConnectionManager:
@@ -23,7 +23,7 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket) -> None:
         """
         Принять WebSocket соединение и зарегистрировать его.
-        
+
         Args:
             websocket: WebSocket соединение
         """
@@ -34,7 +34,7 @@ class ConnectionManager:
     async def disconnect(self, websocket: WebSocket) -> None:
         """
         Закрыть WebSocket соединение и удалить его из хранилища.
-        
+
         Args:
             websocket: WebSocket соединение
         """
@@ -44,10 +44,10 @@ class ConnectionManager:
     async def send(self, message: dict) -> int:
         """
         Отправить сообщение всем активным соединениям пользователя.
-        
+
         Args:
             message: Сообщение для отправки
-            
+
         Returns:
             Количество успешно отправленных сообщений
         """
@@ -81,11 +81,11 @@ class ConnectionManager:
     async def send_to_user(self, user_id: str, message: dict) -> int:
         """
         Отправить сообщение конкретному пользователю.
-        
+
         Args:
             user_id: Идентификатор пользователя
             message: Сообщение для отправки
-            
+
         Returns:
             Количество успешно отправленных сообщений
         """
@@ -112,17 +112,15 @@ class ConnectionManager:
         return sent_count
 
     async def broadcast(
-        self, 
-        message: dict, 
-        exclude_users: Optional[Set[str]] = None
+        self, message: dict, exclude_users: Optional[Set[str]] = None
     ) -> int:
         """
         Рассылить сообщение всем подключенным пользователям.
-        
+
         Args:
             message: Сообщение для отправки
             exclude_users: Множество user_id для исключения
-            
+
         Returns:
             Количество успешно отправленных сообщений
         """
@@ -135,13 +133,15 @@ class ConnectionManager:
             sent = await self.send_to_user(user_id, message)
             total_sent += sent
 
-        logger.info(f"Broadcast отправлено {total_sent} сообщений {len(target_users)} пользователям")
+        logger.info(
+            f"Broadcast отправлено {total_sent} сообщений {len(target_users)} пользователям"
+        )
         return total_sent
 
     async def get_active_connections(self) -> int:
         """
         Получить количество активных соединений пользователя.
-        
+
         Returns:
             Количество соединений
         """

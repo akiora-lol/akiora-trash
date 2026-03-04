@@ -1,23 +1,23 @@
-import msgspec
+from msgspec import Struct
 from typing import Optional
 
-from .base import BaseMessage, MessageType
+from schemas.base import BaseMessage, MessageType
 
 
-class InfoRequest(BaseMessage, tag="info.request"):
+class InfoRequest(Struct):
     """Запрос информации от клиента"""
 
-    type: MessageType = MessageType.INFO_REQUEST
     action: str
+    type: MessageType = MessageType.INFO_REQUEST
     payload: Optional[dict] = None
 
 
-class InfoResponse(BaseMessage, tag="info.response"):
+class InfoResponse(Struct):
     """Ответ с информацией от сервера"""
 
-    type: MessageType = MessageType.INFO_RESPONSE
     action: str
+    correlation_id: str
     status: str  # "success", "error"
+    type: MessageType = MessageType.INFO_RESPONSE
     data: Optional[dict] = None
     error: Optional[str] = None
-    correlation_id: str
