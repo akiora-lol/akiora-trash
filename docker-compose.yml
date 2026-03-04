@@ -156,6 +156,26 @@ services:
       - backend
     restart: unless-stopped
 
+  finderworker:
+    build:
+      context: ./backend
+      dockerfile: FinderService/Dockerfile
+    container_name: finder.consumer
+ 
+    env_file:
+      - .env
+    environment:   
+      MONGODB_DB_NAME: finder_db      
+      APP_NAME: finderservice
+      LOG_LEVEL: INFO
+    depends_on:
+
+      - redis
+      - mongodb    
+    networks:
+      - backend
+    restart: unless-stopped
+
   # parserservice:
   #   build:
   #     context: ./backend
