@@ -2,7 +2,7 @@ from beanie import Document
 from pydantic import ConfigDict, Field, EmailStr, field_serializer, BaseModel
 from uuid import UUID, uuid4
 from typing import Literal
-from datetime import datetime, UTC
+from datetime import datetime, UTC, date
 
 
 def time_now():
@@ -13,28 +13,34 @@ def default_name():
     return f"user{int(time_now().timestamp())}"
 
 
-def default_roles():
-    return ["default"]
+class Role(BaseModel):
+    resource_type: str
+    access_level: int
 
 
-SocialKey = Literal["vk", "tg", "ds", "yt", "tw", "sc"]
+Platform = Literal["vk", "tg", "ds", "yt", "tw", "sc"]
 
 
 class Social(BaseModel):
     link: str
-    hidden: bool = Field(default=False)
-    type: Literal["personal", "public"]
+    hidden: bool = Field(default=True)
+
+
+class Birthday(BaseModel):
+    day: date
+    hidden: bool = Field(default=True)
 
 
 class User(Document):
     id: UUID = Field(default_factory=uuid4)
     email: EmailStr
-    avatar: str
+    avatar: str | None = None
+    bio: str | None = Field(default=None, max_length=500)
     nickname: str = Field(default_factory=default_name)
     gender: Literal["male", "female"] | None = None
-    age: int | None = Field(default=None, min=15)
-    socials: dict[SocialKey, list[Social]] = Field(default_factory=dict)
-    roles: list[str] = Field(default_factory=default_roles)
+    birth_date: Birthday | None = None
+    socials: dict[Platform, Social] | None = None
+    roles: dict[UUID, Role] | None = None
     created_at: datetime = Field(default_factory=time_now)
     last_updated: datetime = Field(default_factory=time_now)
 

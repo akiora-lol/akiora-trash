@@ -5,7 +5,7 @@ from dishka import Provider, Scope, make_async_container, provide
 from services.redis_manager import RedisManager
 from redis.asyncio import Redis
 from faststream.redis import RedisBroker
-
+from fast_depends.msgspec import MsgSpecSerializer
 from settings import Settings
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -30,8 +30,7 @@ class ServiceProvider(Provider):
     @provide(scope=Scope.APP)
     async def get_redis_broker(self, settings: Settings) -> RedisBroker:
         broker = RedisBroker(
-            url=settings.redis_url,
-            max_connections=20,
+            url=settings.redis_url, max_connections=20, serializer=MsgSpecSerializer()
         )
         await broker.connect()
         return broker

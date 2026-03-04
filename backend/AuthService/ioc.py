@@ -5,7 +5,7 @@ from dishka import Provider, Scope, make_async_container, provide
 from services import AuthService, SessionService, RedisManager
 from redis.asyncio import Redis
 from faststream.redis import RedisBroker
-
+from fast_depends.msgspec import MsgSpecSerializer
 from settings import Settings
 from fastapi_sso.sso.yandex import YandexSSO
 from fastapi_sso.sso.discord import DiscordSSO
@@ -19,6 +19,7 @@ from dishka.integrations.fastapi import (
 from services.mail import MailSender
 from services.redis import RedisService
 from repos.session import SessionRepo
+import msgspec
 
 
 class SSOProvider(Provider):

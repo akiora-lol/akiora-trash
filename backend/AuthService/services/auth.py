@@ -16,6 +16,8 @@ from faststream.redis import RedisBroker
 from services.redis import RedisService
 from services.session import SessionService
 from services.mail import MailSender
+from schemas.user import GetUser
+from msgspec import msgpack
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -139,12 +141,19 @@ class AuthService:
         user_data = None
         try:
             user_data = await self.broker.request(
-                stream="user.rpc", message={"email": email, "action": "get"}, timeout=5
+                stream="user.rpc",
+                message=msgpack.encode(GetUser(email=email)),
+                timeout=5,
             )
         except TimeoutError as e:
+            print(e)
             # TODO amqp logic and maybe retries
             ...
-        data = json.loads(user_data.body) if user_data else None
+        print(user_data)
+        print(msgpack.decode(user_data.body))
+
+        data = msgpack.decode(user_data.body) if user_data else None
+        print(data)
         ses_id = await self.session_service.create_session(email, provider, data)
 
         response = RedirectResponse(url="http://localhost:5173/welcome")

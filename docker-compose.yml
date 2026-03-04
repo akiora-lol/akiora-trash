@@ -19,22 +19,22 @@ services:
       RUSTFS_LOG_LEVEL: info
     user: "root"
 
-  traefik:
-    image: traefik:v3.0
-    container_name: traefik
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro    
-      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./traefik/dynamic:/etc/traefik/dynamic:ro
-    networks:
-      - backend
-    depends_on:
-      - authservice
-      - communityservice
-    restart: unless-stopped
+  # traefik:
+  #   image: traefik:v3.0
+  #   container_name: traefik
+  #   ports:
+  #     - "80:80"
+  #     - "8080:8080"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro    
+  #     - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+  #     - ./traefik/dynamic:/etc/traefik/dynamic:ro
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - authservice
+  #     - communityservice
+  #   restart: unless-stopped
 
   redis:
     image: redis:8.4.0
@@ -92,11 +92,31 @@ services:
     networks:
       - backend
 
+
+
+  bff:
+    build:
+      context: ./backend
+      dockerfile: BFF/Dockerfile
+    container_name: bff.api
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:   
+      USER_RPC_STREAM: user.rpc
+      APP_NAME: bff.api    
+    depends_on:   
+      - redis    
+      - mongodb 
+    networks:
+      - backend
+    restart: unless-stopped
  
   authservice:
     build:
       context: ./backend
-      dockerfile: AuthService/Dockerfile_api
+      dockerfile: AuthService/Dockerfile
     container_name: auth.api
     ports:
       - "8000:8000"
@@ -106,58 +126,20 @@ services:
       MONGODB_DB_NAME: auth_db      
       APP_NAME: auth.api
       LOG_LEVEL: INFO
-    depends_on:
-   
+    depends_on:   
       - redis    
       - mongodb 
     networks:
       - backend
     restart: unless-stopped
 
-  authconsumer:
-    build:
-      context: ./backend
-      dockerfile: AuthService/Dockerfile_amqp
-    container_name: auth.consumer   
-    env_file:
-      - .env
-    environment:   
-      MONGODB_DB_NAME: auth_db      
-      APP_NAME: auth.consumer
-      LOG_LEVEL: INFO
-    depends_on:
  
-      - redis    
-      - mongodb 
-    networks:
-      - backend
-    restart: unless-stopped
 
-  communityservice:
+
+  communityworker:
     build:
       context: ./backend
-      dockerfile: CommunityService/Dockerfile_api
-    container_name: community.api
-    ports:
-      - "8001:8000"
-    env_file:
-      - .env
-    environment:   
-      MONGODB_DB_NAME: community_db      
-      APP_NAME: communityservice
-      LOG_LEVEL: INFO
-    depends_on:
-
-      - redis
-      - mongodb    
-    networks:
-      - backend
-    restart: unless-stopped
-
-  communityconsumer:
-    build:
-      context: ./backend
-      dockerfile: CommunityService/Dockerfile_amqp
+      dockerfile: CommunityService/Dockerfile
     container_name: community.consumer
  
     env_file:
@@ -174,24 +156,24 @@ services:
       - backend
     restart: unless-stopped
 
-  parserservice:
-    build:
-      context: ./backend
-      dockerfile: pyParser/Dockerfile_api
-    container_name: parserservice
-    ports:
-      - "8003:8000"
-    env_file:
-      - .env
-    environment:   
-      APP_NAME: ParserService
-      LOG_LEVEL: INFO
-    depends_on:
+  # parserservice:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: pyParser/Dockerfile_api
+  #   container_name: parserservice
+  #   ports:
+  #     - "8003:8000"
+  #   env_file:
+  #     - .env
+  #   environment:   
+  #     APP_NAME: ParserService
+  #     LOG_LEVEL: INFO
+  #   depends_on:
  
-      - redis    
-    networks:
-      - backend
-    restart: unless-stopped
+  #     - redis    
+  #   networks:
+  #     - backend
+  #   restart: unless-stopped
   # chatservice:
   #   build:
   #     context: ./backend

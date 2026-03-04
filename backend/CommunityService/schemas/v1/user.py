@@ -1,20 +1,18 @@
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, EmailStr
+from msgspec import Struct
 
 
-class CreateUser(BaseModel):
-    email: EmailStr
+class CreateUser(Struct):
+    email: str
     key: str
 
 
-class EmailRequest(BaseModel):
+class EmailRequest(Struct):
     email: str
 
 
-class SimpleUpdateRequest(BaseModel):
-    email: EmailStr | None = None
+class SimpleUpdateRequest(Struct, omit_defaults=True):
+    email: str | None = None
     gender: Literal["male", "female"] | None = None
     nickname: str | None = None
     age: int | None = None
-
-    model_config = ConfigDict(extra="ignore")
