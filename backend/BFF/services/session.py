@@ -1,27 +1,25 @@
-from datetime import UTC, datetime
-
-
 import hmac
 from uuid import UUID
 
-
+from loguru import logger
 from schemas import Session
-from services import RedisService, SessionLogger, logged_async, logged
+from services import RedisService
 from shortuuid import decode as short_decode
 import hashlib
 from settings import Settings
+from datetime import datetime, timedelta
 
 
 class SessionService:
-    def __init__(self, repo: RedisService, settings: Settings, logger: SessionLogger):
+    def __init__(self, repo: RedisService, settings: Settings):
+
         self.prefix = "sid:"
         self.repo = repo
-        self.logger = logger
-        self.settings = settings
+        self.SECRET_KEY = settings.secret_key
 
-    @logged
     def verify_session(self, signed_id: str) -> UUID | None:
         try:
+            st = datetime.now()
             session_id_enc, signature = signed_id.rsplit(".", 1)
 
             session_id = short_decode(session_id_enc)
@@ -33,18 +31,19 @@ class SessionService:
             ).hexdigest()
 
             if hmac.compare_digest(signature, expected_signature):
+                logger.debug(
+                    "Verified in {sec}", sec=(datetime.now() - st).microseconds
+                )
                 return session_id
-        except:
+        except Exception as e:
             raise
 
-    @logged_async
     async def get_session(self, session_id: UUID) -> Session | None:
 
         data = await self.repo.get(f"{self.prefix}{session_id}", Session)
 
         return data
 
-    @logged_async
     async def get_session_uid(self, session_id: UUID) -> str | None:
 
         data = await self.repo.get(f"{self.prefix}{session_id}", Session)
@@ -53,16 +52,22 @@ class SessionService:
 
         return None
 
-    @logged_async
     async def get_uid(self, signed_ses: str) -> str | None:
 
         sid = self.verify_session(signed_id=signed_ses)
 
         return await self.get_session_uid(sid)
 
+    async def get_user(self, signed_ses: str) -> dict | None:
+
+        sid = self.verify_session(signed_id=signed_ses)
+
+        return await self.get_session_user(sid)
+
     async def get_session_user(self, session_id: UUID) -> dict | None:
 
         data = await self.repo.get(f"{self.prefix}{session_id}", Session)
+
         if data:
             return data.custom_data.get("user")
 
