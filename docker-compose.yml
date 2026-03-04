@@ -176,6 +176,26 @@ services:
       - backend
     restart: unless-stopped
 
+  socketservice:
+    build:
+      context: ./backend
+      dockerfile: SocketService/Dockerfile
+    container_name: socket.service
+ 
+    env_file:
+      - .env
+    environment:   
+    
+      APP_NAME: socketservice
+      LOG_LEVEL: INFO
+    depends_on:
+
+      - redis
+  
+    networks:
+      - backend
+    restart: unless-stopped
+
   # parserservice:
   #   build:
   #     context: ./backend
