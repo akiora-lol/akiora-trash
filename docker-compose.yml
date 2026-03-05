@@ -176,25 +176,44 @@ services:
       - backend
     restart: unless-stopped
 
-  socketservice:
+  socketservice_rust:
     build:
-      context: ./backend
-      dockerfile: SocketService/Dockerfile
-    container_name: socket.service
- 
+        context: ./backend
+        dockerfile: SocketServiceRust/Dockerfile
+    container_name: SocketServiceRust
+    ports: 
+    - "8005:3000"
     env_file:
-      - .env
+    - .env
     environment:   
-    
-      APP_NAME: socketservice
-      LOG_LEVEL: INFO
+        
+        APP_NAME: SocketServiceRust
+        LOG_LEVEL: INFO
     depends_on:
-
-      - redis
-  
+    - redis  
     networks:
-      - backend
+    - backend
     restart: unless-stopped
+
+#   socketservice:
+#     build:
+#       context: ./backend
+#       dockerfile: SocketService/Dockerfile
+#     container_name: socket.service
+ 
+#     env_file:
+#       - .env
+#     environment:   
+    
+#       APP_NAME: socketservice
+#       LOG_LEVEL: INFO
+#     depends_on:
+
+#       - redis
+  
+#     networks:
+#       - backend
+#     restart: unless-stopped
 
   # parserservice:
   #   build:
