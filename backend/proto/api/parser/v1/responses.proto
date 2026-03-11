@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package api.parser.v1;
+
+
+message SimpleAccountResponse {
+  string icon_id = 1;
+
+}

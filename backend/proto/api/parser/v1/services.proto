@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "api/parser/v1/requests.proto";
+
+import "api/parser/v1/responses.proto";
+
+package api.parser.v1;
+
+service Parser {
+	rpc GetAccount(GetAccountRequest) returns (SimpleAccountResponse);
+}

@@ -10,6 +10,9 @@ export default defineConfig({
         autoCodeSplitting: true,
     }), react(),
     tailwindcss(),],
+    worker: {
+        format: 'es'
+    },
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),

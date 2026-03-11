@@ -7,6 +7,7 @@ import { routeTree } from './routeTree.gen'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { WebSocketProvider } from './contexts/WebSocketContext'
 // Создаем роутер
 const router = createRouter({ routeTree })
 const queryClient = new QueryClient({
@@ -38,7 +39,10 @@ if (!rootElement.innerHTML) {
         <StrictMode>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    <RouterProvider router={router} />
+                    <WebSocketProvider>
+
+                        <RouterProvider router={router} />
+                    </WebSocketProvider>
                 </AuthProvider>
             </QueryClientProvider>
         </StrictMode>,

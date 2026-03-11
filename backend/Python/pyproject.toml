@@ -27,4 +27,5 @@ dependencies = [
     "opgg-py>=3.1.0",
     "litestar>=2.21.0",
     "loguru>=0.7.3",
+    "msgspec>=0.20.0",
 ]
