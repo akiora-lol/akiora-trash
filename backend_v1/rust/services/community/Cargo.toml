@@ -1,0 +1,22 @@
+[package]
+name = "community"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio ={workspace=true}
+axum ={workspace=true}
+chrono={workspace=true}
+redis={workspace=true}
+serde ={workspace=true}
+serde_json={workspace=true}
+time ={workspace=true}
+uuid ={workspace=true}
+proto_build={workspace=true}
+tonic={workspace=true}
+
+shared_enums={workspace=true}
+shared_structs={workspace=true}
+shared_services={workspace=true}
+shared_errors={workspace=true}
+mongodb ={workspace=true}
