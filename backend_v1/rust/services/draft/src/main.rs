@@ -86,7 +86,6 @@ impl State {
         if total_actions >= max_actions {
             return Err(DraftError::DraftComplete);
         }
-
         // Проверка на дубликаты чемпионов
         let champion_id = match action {
             ActionType::Pick(id) | ActionType::Ban(id) => *id,
