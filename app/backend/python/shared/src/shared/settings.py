@@ -37,3 +37,5 @@ class Settings(BaseSettings):
     smtp_server: str = ""
     email_address: str = ""
     email_password: str = ""
+
+    secret_key: str = ""

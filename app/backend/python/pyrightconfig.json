@@ -1,0 +1,5 @@
+{
+    "extraPaths": ["shared/src"],
+    "include": ["services"],
+    "exclude": ["**/__pycache__", ".venv", "shared"],
+}

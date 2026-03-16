@@ -5,7 +5,7 @@ from redis.asyncio import Redis
 
 from ..errors import RedisError
 
-T = TypeVar("T", bound=msgspec.Struct | dict)
+T = TypeVar("T", bound=msgspec.Struct)
 
 
 class RedisService:
@@ -38,13 +38,13 @@ class RedisService:
     async def get(self, key: str, decoder: msgspec.msgpack.Decoder[T]) -> T: ...
 
     @overload
-    async def get(self, key: str, decoder: None) -> dict: ...
+    async def get(self, key: str, decoder: None = None) -> dict: ...
 
     async def get(
         self,
         key: str,
         decoder: msgspec.msgpack.Decoder[T] | None = None,
-    ) -> T:
+    ) -> T | dict:
         data_raw = await self.redis.get(key)
         if not data_raw:
             raise RedisError("Value doesnt exist for this key")

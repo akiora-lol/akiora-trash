@@ -25,5 +25,9 @@ dependencies = [
 
 
 [tool.uv.sources]
+shared = { workspace = true, editable = true }
 
-shared={path= "./shared", editable=true}
+[tool.uv.workspace]
+members = [
+    "shared",
+]
