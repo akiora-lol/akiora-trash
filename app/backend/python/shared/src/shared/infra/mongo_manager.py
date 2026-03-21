@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-
 from shared.settings import Settings
 
 

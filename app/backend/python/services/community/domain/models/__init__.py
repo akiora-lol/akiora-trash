@@ -4,9 +4,6 @@ from .user import (
     Platform,
     Social,
     User,
-    UserCreate,
-    UserResponse,
-    UserUpdate,
 )
 
 __all__ = [
@@ -15,7 +12,4 @@ __all__ = [
     "Platform",
     "Social",
     "User",
-    "UserCreate",
-    "UserResponse",
-    "UserUpdate",
 ]

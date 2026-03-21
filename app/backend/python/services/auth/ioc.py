@@ -5,10 +5,9 @@ from fastapi_sso.sso.base import SSOBase
 from fastapi_sso.sso.discord import DiscordSSO
 from fastapi_sso.sso.yandex import YandexSSO
 from redis.asyncio import Redis
+from shared.settings import Settings
 
-from shared.src.services.redis import RedisService
-from shared.src.services.redis_manager import RedisManager
-from shared.src.settings import Settings
+from shared import RedisManager, RedisService
 
 settings = Settings()  # pyright: ignore
 

@@ -4,8 +4,10 @@ import msgspec
 from motor.motor_asyncio import AsyncIOMotorCollection, AsyncIOMotorDatabase
 from msgspec.structs import Struct
 
-T = TypeVar("T")
+from ..errors import LibError
 
+T = TypeVar("T")
+TT=TypeVar("TT")
 
 class Mongo:
     def __init__(self, db: AsyncIOMotorDatabase, collection_name: str):
@@ -15,10 +17,10 @@ class Mongo:
 class MongoQuery(Mongo):
     async def get_all(
         self,
-        convert_to: Type[Struct],
+        convert_to: Type[T],
         limit: int = 1000,
         offset: int = 0,
-    ) -> AsyncIterator[Struct]:
+    ) -> AsyncIterator[T]:
         cursor = self._collection.find({}).limit(limit).skip(offset)
         async for bson_data in cursor:
             data = msgspec.convert(bson_data, type=convert_to)
@@ -26,28 +28,28 @@ class MongoQuery(Mongo):
 
     async def get_all_as_list(
         self,
-        convert_to: Type[Struct],
+        convert_to: Type[T],
         limit: int = 1000,
         offset: int = 0,
-    ) -> list[Struct]:
+    ) -> list[T]:
         return [doc async for doc in self.get_all(convert_to, limit, offset)]
 
     async def get_by_id(
         self,
-        convert_to: Type[Struct],
+        convert_to: Type[T],
         id: str,
-    ) -> Struct | None:
+    ) -> T:
         bson_data = await self._collection.find_one({"_id": id})
         if bson_data is None:
-            return None
+            raise LibError("Not found")
         return msgspec.convert(bson_data, type=convert_to)
 
     async def get_by_field(
         self,
-        convert_to: Type[Struct],
+        convert_to: Type[T],
         field: str,
         value: Any,
-    ) -> AsyncIterator[Struct]:
+    ) -> AsyncIterator[T]:
         cursor = self._collection.find({field: value})
         async for bson_data in cursor:
             data = msgspec.convert(bson_data, type=convert_to)
@@ -55,10 +57,10 @@ class MongoQuery(Mongo):
 
     async def get_by_field_as_list(
         self,
-        convert_to: Type[Struct],
+        convert_to: Type[T],
         field: str,
         value: Any,
-    ) -> list[Struct]:
+    ) -> list[T]:
         return [doc async for doc in self.get_by_field(convert_to, field, value)]
 
     async def count(self, filter: dict[str, Any] | None = None) -> int:
